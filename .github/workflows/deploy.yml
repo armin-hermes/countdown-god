@@ -16,7 +16,7 @@ jobs:
         run: |
           test -f public/index.html
           grep -q 'dir="rtl"' public/index.html
-          grep -q 'data-theme' public/index.html
+          grep -q 'god.study' public/index.html
           ls -lh public/index.html
 
       - name: Create Pages project and deploy
