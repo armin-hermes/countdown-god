@@ -96,7 +96,8 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 @keyframes bar-shine{0%{transform:translateX(100%)}60%,100%{transform:translateX(-100%)}}
 .bar.brkbar>i{background:linear-gradient(90deg,#0ea5e9,#22d3ee)}
 .pbar{display:flex;align-items:center;gap:10px;margin-top:8px}
-.pbar .bar{flex:1}
+.pbar .bar{flex:1;background:linear-gradient(90deg,rgba(244,85,77,.25),rgba(245,158,11,.25),rgba(16,185,129,.25))}
+.pbar .bar>i{background:linear-gradient(90deg,#f43f5e,#f59e0b,#10b981)}
 .big{font-size:clamp(32px,9vw,44px);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.25;letter-spacing:-1px}
 .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .statbox{background:var(--bg0);border:1px solid var(--bd2);border-radius:13px;padding:12px 14px}
@@ -144,6 +145,13 @@ main>section:nth-child(5){animation-delay:.24s}
 .note-card:hover{transform:translateY(-2px);border-color:var(--ac);box-shadow:var(--shadow)}
 .note-card.pinned{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac),var(--shadow)}
 .trow.done .ttx{text-decoration:line-through;opacity:.55}
+.trow.pr1{border-color:rgba(244,85,77,.55);background:linear-gradient(135deg,rgba(244,85,77,.13),transparent 70%)}
+.trow.pr1 .tickbox{border-color:rgba(244,85,77,.6)}
+.trow.pr2{border-color:rgba(245,158,11,.4);background:linear-gradient(135deg,rgba(245,158,11,.09),transparent 70%)}
+.trow.pr3{opacity:.92}
+.trow .prio.p1{background:var(--bad);color:#fff;border-color:transparent}
+.trow .prio.p2{background:rgba(245,158,11,.18);color:#f59e0b;border-color:transparent}
+.trow .prio.p3{background:var(--bg2);color:var(--tx2)}
 .trow{transition:background .25s,border-color .25s,opacity .3s}
 .trow.flash{animation:pop-in .35s}
 .toast{animation:tin .3s cubic-bezier(.2,.7,.3,1)}
@@ -552,7 +560,7 @@ if(!TODOS.length){w.innerHTML='<div class="empty"><b>لیست خالی است</b
 var order={1:0,2:1,3:2};
 var arr=TODOS.map(function(t,i){return{t:t,i:i}}).sort(function(a,b){if(!!a.t.done!==!!b.t.done)return a.t.done?1:-1;return (order[a.t.pr||2]-order[b.t.pr||2])||(b.t.ts-a.t.ts)});
 w.innerHTML=arr.map(function(x){var t=x.t;var pl=t.pr===1?'زیاد':t.pr===2?'متوسط':'کم';
-return '<div class="trow'+(t.done?' done':'')+'" data-tid="'+x.i+'"><span class="tickbox" data-tick="'+x.i+'">'+ic('check','sm')+'</span><span class="ttx" data-tedit="'+x.i+'">'+esc(t.tx)+'</span><span class="prio p'+(t.pr||2)+'">'+pl+'</span><button class="mini del" data-tdel="'+x.i+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join('');
+return '<div class="trow pr'+(t.pr||2)+(t.done?' done':'')+'" data-tid="'+x.i+'"><span class="tickbox" data-tick="'+x.i+'">'+ic('check','sm')+'</span><span class="ttx" data-tedit="'+x.i+'">'+esc(t.tx)+'</span><span class="prio p'+(t.pr||2)+'">'+pl+'</span><button class="mini del" data-tdel="'+x.i+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join('');
 function bind(attr,fn){var bs=w.querySelectorAll('['+attr+']');for(var j=0;j<bs.length;j++){bs[j].onclick=(function(el){return function(e){e.stopPropagation();fn(el)}})(bs[j])}}
 bind('data-tick',function(el){var t=TODOS[+el.dataset.tick];t.done=!t.done;saveTodos();renderTodos();toast(t.done?'انجام شد':'برگشت به باز')});
 bind('data-tdel',function(el){if(!window.confirm('این کار حذف شود؟'))return;TODOS.splice(+el.dataset.tdel,1);saveTodos();renderTodos();toast('کار حذف شد')});
