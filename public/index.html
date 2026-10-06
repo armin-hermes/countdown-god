@@ -198,7 +198,6 @@ kbd{background:var(--bg2);border:1px solid var(--bd);border-bottom-width:2px;bor
 main,footer{position:relative;z-index:1}
 .bgblob{display:none}
 .bgblob.b1{width:420px;height:420px;background:var(--ac);top:-140px;left:-120px;animation:blob-f 18s ease-in-out infinite alternate}
-.bgblob.b2{width:360px;height:360px;background:#22d3ee;bottom:-120px;right:-100px;animation:blob-f 22s ease-in-out infinite alternate-reverse}
 @keyframes blob-f{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,40px) scale(1.15)}}
 [data-mode="light"] .bgblob{opacity:.35}
 .accrow{display:flex;gap:9px;align-items:center;margin-top:10px;flex-wrap:wrap}
@@ -287,7 +286,7 @@ main{padding:14px 10px 48px;gap:12px}
 </div>
 <div class="chips" id="subjChips"></div>
 <div class="dial" id="dial" role="timer" aria-label="تایمر مطالعه">
-<svg viewBox="0 0 230 230"><circle cx="115" cy="115" r="100" fill="none" stroke="var(--bg2)" stroke-width="13"/><circle id="ring" cx="115" cy="115" r="100" fill="none" stroke="#5e6ad2" stroke-width="13" stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="0"/></svg>
+<svg viewBox="0 0 230 230"><circle cx="115" cy="115" r="100" fill="none" stroke="var(--bg2)" stroke-width="13"/><circle id="ring" cx="115" cy="115" r="100" fill="none" stroke="var(--ac)" stroke-width="13" stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="0"/></svg>
 <div class="face"><div class="t" id="clock">۲۵:۰۰</div><span class="badge" id="state">آماده</span><span class="fsubj" id="faceSubj"></span></div>
 </div>
 <div class="sessline" id="sessLine"></div>
@@ -362,7 +361,7 @@ function jal(d){try{return new Intl.DateTimeFormat('fa-IR',{year:'numeric',month
 /* localStorage keys: god.events.v1 (legacy, preserved untouched), god.ui.v1 (settings), god.study.v1 (session log — old entries keep working) */
 var LS_E='god.events.v1',LS_U='god.ui.v1',LS_S='god.study.v1';
 try{JSON.parse(localStorage.getItem(LS_E)||'[]')}catch(e){}
-var PALETTE=['#5e6ad2','#22d3ee','#22c55e','#a3e635','#f59e0b','#f97316','#e879f9','#f43f5e','#8a8f98'];
+var PALETTE=['#f7f8f8','#d0d6e0','#8a8f98','#62666d','#f7f8f8','#d0d6e0','#8a8f98','#62666d','#8a8f98'];
 var DEF_SUBJ=['ریاضی','فیزیک','شیمی','زیست‌شناسی','ادبیات فارسی','عربی','زبان انگلیسی','سایر'].map(function(n,i){return{name:n,color:PALETTE[i%PALETTE.length]}});
 var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,focusLen:25,breakLen:5,tmode:'focus',accent:''};
 try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s){return{name:String(s.name).slice(0,30),color:s.color||'#8a8f98'}})}else if(k in UI||k==='subjects'){}else{continue}if(k!=='subjects')UI[k]=u[k]}}}catch(e){}
@@ -417,7 +416,7 @@ function ring(){var C=628.3,p=T.total?T.remain/T.total:0;$('#ring').style.stroke
 function setTitle(){document.title=T.running?(fmt(T.remain)+' • '+(isBreak()?'استراحت':UI.subject)):TITLE}
 function renderTimer(){
 $('#clock').textContent=fmt(T.remain);ring();
-$('#ring').setAttribute('stroke',isBreak()?'#22d3ee':'var(--ac)');
+$('#ring').setAttribute('stroke','var(--ac)');
 $('#dial').classList.toggle('run',T.running);
 var st=$('#state');
 if(isBreak()){st.textContent=T.running?'در حال استراحت':'استراحت آماده';st.className='badge brk'}
@@ -528,7 +527,7 @@ function saveGoal(){var v=parseInt(en($('#goalInp').value),10);if(!(v>=30&&v<=96
 $('#goalSave').onclick=saveGoal;
 $('#goalInp').addEventListener('keydown',function(e){if(e.key==='Enter')saveGoal()});
 /* accent picker + confetti burst */
-var ACCENTS=[['#5e6ad2','#8b96ff','ایندیگو'],['#8b5cf6','#c4b5fd','بنفش'],['#0ea5e9','#22d3ee','فیروزه'],['#10b981','#34d399','زمرد'],['#f59e0b','#fbbf24','کهربایی'],['#f43f5e','#fb7185','رز'],['#e879f9','#f0abfc','صورتی'],['#a3e635','#bef264','لیمویی']];
+var ACCENTS=[];
 function hexToSoft(hex){var h=hex.replace('#','');var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return 'rgba('+r+','+g+','+b+',.14)'}
 function applyAccent(){var a=null;for(var i=0;i<ACCENTS.length;i++){if(ACCENTS[i][0]===UI.accent)a=ACCENTS[i]}
 var root=document.documentElement;
