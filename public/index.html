@@ -13,7 +13,7 @@
 :root{--bg0:#08090a;--bg1:#101113;--bg2:#1a1b1e;--glass:rgba(20,21,26,.72);--tx0:#f7f8f8;--tx1:#d0d6e0;--tx2:#9aa0ab;--tx3:#62666d;--ac:#5e6ad2;--ac2:#8b96ff;--acsoft:rgba(94,106,210,.14);--ok:#10b981;--ok2:#34d399;--brk:#22d3ee;--bad:#f4554d;--bd:rgba(255,255,255,.09);--bd2:rgba(255,255,255,.055);--r:16px;--shadow:0 16px 48px -20px rgba(0,0,0,.75);--mesh1:#5e6ad2;--mesh2:#0ea5e9;--mesh3:#10b981;color-scheme:dark}
 [data-mode="light"]{--bg0:#eef0f4;--bg1:#ffffff;--bg2:#e8ebf1;--glass:rgba(255,255,255,.78);--tx0:#12141a;--tx1:#3a3f4b;--tx2:#6b7280;--tx3:#9aa0ab;--ac:#4f5bd5;--ac2:#4f5bd5;--acsoft:rgba(79,91,213,.1);--bd:rgba(10,12,20,.11);--bd2:rgba(10,12,20,.06);--shadow:0 16px 40px -24px rgba(20,25,60,.28);--mesh1:#c7d0ff;--mesh2:#bae6fd;--mesh3:#bbf7d0;color-scheme:light}
 html{scroll-behavior:smooth}
-body{font-family:Vazirmatn,system-ui,Tahoma,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100dvh;font-size:15px;line-height:1.9;-webkit-tap-highlight-color:transparent;transition:background .25s,color .25s}
+body{font-family:Vazirmatn,system-ui,Tahoma,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100dvh;font-size:15px;line-height:1.9;-webkit-tap-highlight-color:transparent;overflow-x:hidden;transition:background .25s,color .25s}
 button{font-family:inherit}input,select{font-family:inherit;font-size:16px}
 .ic{width:18px;height:18px;flex-shrink:0;vertical-align:-3px}
 .ic.sm{width:15px;height:15px}.ic.lg{width:24px;height:24px}
@@ -36,7 +36,8 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 @keyframes drift{from{transform:translate(-3%,-2%) scale(1)}to{transform:translate(3%,3%) scale(1.08)}}
 .timer-card{position:relative;border-radius:20px;background:var(--glass);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--bd);padding:22px 18px 18px;overflow:hidden}
 .card{background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--r);padding:20px 17px;box-shadow:var(--shadow)}
-.card h2{font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.2px}
+.card h2{font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.2px}
+.card h2 .sec-act{margin-inline-start:auto;display:flex;gap:6px}
 .card h2 .ic{color:var(--ac2)}
 .sub{font-size:12.8px;color:var(--tx2);margin-top:3px;line-height:1.9}
 /* mode tabs */
@@ -50,7 +51,7 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 .dial.run #ring{animation:ringpulse 2.4s ease-in-out infinite}
 @keyframes ringpulse{0%,100%{filter:drop-shadow(0 0 6px rgba(94,106,210,.4))}50%{filter:drop-shadow(0 0 16px rgba(94,106,210,.75))}}
 .face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.face .t{font-size:clamp(54px,15vw,70px);font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;line-height:1.1;letter-spacing:-2px}
+.face .t{font-size:clamp(44px,16vw,72px);font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;line-height:1.1;letter-spacing:-1px}
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.8px;font-weight:700;border-radius:99px;padding:4px 13px;background:var(--bg2);border:1px solid var(--bd);color:var(--tx1)}
 .badge.ok{background:rgba(16,185,129,.15);color:var(--ok2);border-color:rgba(16,185,129,.3)}
 .badge.brk{background:rgba(34,211,238,.13);color:var(--brk);border-color:rgba(34,211,238,.3)}
@@ -67,7 +68,7 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 .chip.on{background:linear-gradient(135deg,#5e6ad2,#7170ff);border-color:transparent;color:#fff;box-shadow:0 6px 18px -8px rgba(94,106,210,.7)}
 .chip.on.brk{background:linear-gradient(135deg,#0ea5e9,#22d3ee);box-shadow:0 6px 18px -8px rgba(34,211,238,.6)}
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{min-width:0}main>*{min-width:0}
 .lbl{font-size:12.8px;font-weight:800;color:var(--tx2);margin:14px 0 7px;display:flex;align-items:center;gap:6px}
 .inp{background:var(--bg0);border:1px solid var(--bd);color:var(--tx0);border-radius:11px;padding:11px 14px;min-height:48px;outline:none;width:100%;transition:border-color .2s}
 .timer-card .inp{background:rgba(0,0,0,.18)}
@@ -80,10 +81,10 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 .btn.ghost{background:transparent}
 .btn.danger{background:transparent;border-color:rgba(244,85,77,.4);color:var(--bad)}
 .btn.sm{min-height:44px;padding:0 13px;font-size:12.8px}
-.ctl{display:flex;gap:8px;margin-top:14px}
+.ctl{display:flex;gap:8px;margin-top:14px}.ctl>.iconbtn{width:52px;height:52px;flex-shrink:0}
 .srow{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--bd2)}
 .srow:last-child{border-bottom:none}
-.srow .nm{font-size:14px;font-weight:600;flex:1;min-width:0}
+.srow .nm{font-size:13.5px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .srow .nm small{color:var(--tx2);font-weight:400}
 .mini{width:38px;height:38px;min-height:38px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:var(--bg2);border:1px solid var(--bd);color:var(--tx1);cursor:pointer;transition:border-color .2s}
 .mini:hover{border-color:var(--ac);color:var(--tx0)}
@@ -108,13 +109,13 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 .chart .col.today .cbar{background:linear-gradient(180deg,#34d399,#10b981);box-shadow:0 0 14px -2px rgba(16,185,129,.5)}
 .chart small{font-size:10.5px;color:var(--tx2);direction:rtl;white-space:nowrap}
 .chart .v{font-size:10.5px;color:var(--tx1);font-variant-numeric:tabular-nums;min-height:15px}
-.lrow{display:flex;align-items:center;gap:9px;font-size:13px;border:1px solid var(--bd2);border-radius:11px;padding:9px 12px;background:var(--bg0);margin-top:8px}
+.lrow{display:flex;align-items:center;gap:9px;font-size:12.8px;border:1px solid var(--bd2);border-radius:11px;padding:9px 12px;background:var(--bg0);margin-top:8px}.lrow b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:38vw}
 .evmeta{font-size:12px;color:var(--tx2)}
 .empty{border:1.5px dashed var(--bd);border-radius:13px;padding:20px 14px;text-align:center;color:var(--tx2);font-size:13px;margin-top:8px;line-height:2}
 .empty b{color:var(--tx1);display:block;font-size:13.5px}
 .kpanel{overflow:hidden;max-height:0;transition:max-height .3s}
 .kpanel.open{max-height:240px}
-.toast{position:fixed;bottom:20px;right:14px;left:14px;z-index:100;background:var(--bg2);border:1px solid var(--ac);border-radius:12px;padding:12px 16px;font-size:13.5px;font-weight:600;text-align:center;box-shadow:var(--shadow);animation:tin .3s}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:14px;left:14px;z-index:100;background:var(--bg2);border:1px solid var(--ac);border-radius:12px;padding:12px 16px;font-size:13.5px;font-weight:600;text-align:center;box-shadow:var(--shadow);animation:tin .3s}
 @keyframes tin{from{transform:translateY(10px);opacity:0}}
 footer{text-align:center;color:var(--tx3);font-size:12px;padding:0 14px 28px}
 /* zen / focus mode */
@@ -124,6 +125,38 @@ body.zen .hero{box-shadow:0 0 0 1px var(--ac),0 24px 80px -20px rgba(94,106,210,
 .zenhint{display:none;text-align:center;font-size:12px;color:var(--tx2);margin-top:8px}
 body.zen .zenhint{display:block}
 kbd{background:var(--bg2);border:1px solid var(--bd);border-bottom-width:2px;border-radius:6px;padding:1px 8px;font-size:11.5px;font-family:inherit}
+@media(max-width:600px){
+.topbar{gap:8px;padding:10px}
+.brand{flex:1;min-width:0}
+.brand .logo{width:36px;height:36px;border-radius:10px}
+.brand b{font-size:14px}
+.brand small{display:none}
+.topbar .iconbtn{width:42px;height:42px}
+.kchip{order:5;flex:1 1 100%;justify-content:center;font-size:12px;min-height:42px}
+.card{padding:16px 13px;border-radius:14px}
+main{padding:14px 10px 48px;gap:12px}
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ctl #btnStart{grid-column:1/-1;min-height:54px}
+.ctl>.iconbtn{width:100%;height:48px}
+.lrow{flex-wrap:wrap;row-gap:6px}
+.pbar{flex-wrap:wrap}
+.pbar .evmeta{white-space:normal}
+.modetabs button{font-size:12.5px;min-height:44px}
+.chips{padding:10px 2px 4px}
+.chart{gap:5px}
+.chart small{font-size:9.5px}
+.statgrid{gap:8px}
+.big{font-size:clamp(28px,8vw,40px)}
+.hero{border-radius:18px}
+.timer-card{padding:18px 14px 14px}
+.srow{padding:10px 2px}
+}
+@media(max-width:380px){
+.kchip{font-size:11.5px;padding:6px 10px}
+.btn{min-height:46px;font-size:13.5px}
+.statbox{padding:10px 11px}
+.statbox .v{font-size:18px}
+}
 @media(min-width:700px){main{padding:26px 20px 64px}.toast{right:auto;left:20px;min-width:300px}.statgrid{grid-template-columns:repeat(4,1fr)}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
@@ -166,8 +199,8 @@ kbd{background:var(--bg2);border:1px solid var(--bd);border-bottom-width:2px;bor
 <button class="btn pri" id="btnStart"></button>
 <button class="btn" id="btnPause" style="flex:1"></button>
 <button class="btn ghost" id="btnReset" aria-label="ریست"></button>
-<button class="iconbtn" id="btnZen" title="حالت فوکوس" aria-label="حالت فوکوس" style="width:52px;height:52px"></button>
-<button class="iconbtn" id="btnSound" title="صدا" aria-label="صدا" style="width:52px;height:52px"></button>
+<button class="iconbtn" id="btnZen" title="حالت فوکوس" aria-label="حالت فوکوس"></button>
+<button class="iconbtn" id="btnSound" title="صدا" aria-label="صدا"></button>
 </div>
 <p class="zenhint">حالت فوکوس فعال است — بقیه صفحه کم‌نور شد. برای خروج دوباره همین دکمه را بزن. میانبر: <kbd>Space</kbd> شروع / مکث</p>
 </div>
