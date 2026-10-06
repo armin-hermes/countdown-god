@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090a">
+<link rel="manifest" href='data:application/manifest+json,{"name":"ساعت مطالعه کنکور","short_name":"مطالعه","display":"standalone","dir":"rtl","lang":"fa","start_url":".","background_color":"%2308090a","theme_color":"%2308090a"}'>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ساعت مطالعه کنکور</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -205,6 +209,21 @@ main,footer{position:relative;z-index:1}
 .cfhost{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:inherit;z-index:5}
 .cfetti{position:absolute;top:-16px;width:8px;height:12px;border-radius:2px;animation:cf-fall 1.8s ease-in forwards}
 @keyframes cf-fall{to{transform:translateY(460px) rotate(720deg);opacity:0}}
+.statbox{position:relative;overflow:hidden}
+.statbox.streak{border-color:var(--tx0)}
+.streak-flame{display:inline-block;animation:flick .9s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes flick{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.15) rotate(3deg)}}
+.streakdays{display:flex;gap:5px;margin-top:9px;direction:ltr}
+.streakdays i{flex:1;height:26px;border-radius:7px;background:var(--bg2);border:1px solid var(--bd2);position:relative;overflow:hidden}
+.streakdays i.hit{background:var(--tx0);border-color:transparent;animation:pop-in .4s both}
+.streakdays i.today{outline:2px solid var(--tx0);outline-offset:1px}
+.streakdays i:nth-child(2).hit{animation-delay:.05s}
+.streakdays i:nth-child(3).hit{animation-delay:.1s}
+.streakdays i:nth-child(4).hit{animation-delay:.15s}
+.streakdays i:nth-child(5).hit{animation-delay:.2s}
+.streakdays i:nth-child(6).hit{animation-delay:.25s}
+.streakdays i:nth-child(7).hit{animation-delay:.3s}
+.shareprev{background:var(--bg0);border:1px solid var(--bd);border-radius:13px;padding:16px 14px;margin-top:10px;line-height:2.1;font-size:13px;white-space:pre-wrap}
 .statbox{transition:transform .2s,border-color .25s}
 .statbox:hover{transform:translateY(-3px);border-color:var(--ac)}
 .chart .col:nth-child(2) .cbar{animation-delay:.06s}
@@ -317,10 +336,15 @@ main{padding:14px 10px 48px;gap:12px}
 </div>
 <div class="pbar"><div class="bar"><i id="goalBar" style="width:0%"></i></div><span class="evmeta" id="goalTx" style="white-space:nowrap"></span></div>
 <div class="statgrid">
+<div class="statbox streak"><div class="k">استمرار روزانه</div><div class="v" id="streakVal">۰ <small>روز</small></div><div class="streakdays" id="streakDays"></div></div>
+<div class="statbox"><div class="k">رکورد یک روز</div><div class="v" id="recordVal">۰ <small>دقیقه</small></div></div>
 <div class="statbox"><div class="k">مجموع ۷ روز اخیر</div><div class="v" id="weekTotal">۰ <small>دقیقه</small></div></div>
 <div class="statbox"><div class="k">بهترین روز هفته</div><div class="v" id="bestDay" style="font-size:16px">—</div></div>
 <div class="statbox"><div class="k">میانگین روزانه</div><div class="v" id="weekAvg">۰ <small>دقیقه</small></div></div>
-<div class="statbox"><div class="k">نشست‌های امروز</div><div class="v" id="sessToday">۰</div></div>
+<div class="statbox"><div class="k">نشست‌های امروز</div><div class="v" id="sessToday">۰</div></div></div>
+<div class="lbl">گزارش هفتگی قابل اشتراک</div>
+<div class="row"><button class="btn sm" id="shareBtn" style="flex:1">ساخت گزارش هفته</button><button class="btn sm ghost" id="dlBtn">دانلود PNG</button></div>
+<div class="shareprev" id="sharePrev" hidden></div>
 </div>
 <div class="lbl">به تفکیک درس (امروز)</div>
 <div id="perSubj"></div>
@@ -520,7 +544,34 @@ var last=SLOG.map(function(s,idx){return{s:s,idx:idx}}).slice(-15).reverse();
 $('#logList').innerHTML=last.length?last.map(function(x){var s=x.s;var d=new Date(s.ts);var dl=dayKey(s.ts)===tk?'امروز':jal(d);
 return '<div class="lrow"><span class="dot" style="background:'+colorOf(s.subj)+'"></span><b>'+esc(s.subj)+'</b><span class="evmeta">'+fa(minsOf(s))+' دقیقه</span><span style="flex:1"></span><span class="evmeta">'+faPad(d.getHours())+':'+faPad(d.getMinutes())+' • '+dl+'</span><button class="mini del" data-log="'+x.idx+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join(''):'<div class="empty"><b>دفترچه خالی است</b>نشست‌های تمرکزت اینجا ثبت می‌شوند.</div>';
 var bs=$('#logList').querySelectorAll('[data-log]');for(var j=0;j<bs.length;j++){bs[j].onclick=function(){if(!window.confirm('این نشست حذف شود؟'))return;SLOG.splice(+this.dataset.log,1);saveStudy();renderStats();renderSess();toast('نشست حذف شد')}}
-renderSess()}
+renderStreak(days);renderSess()}
+function dayMins(key){return SLOG.filter(function(s){return dayKey(s.ts)===key}).reduce(function(a,s){return a+minsOf(s)},0)}
+function renderStreak(days){
+var arr=[];for(var i=6;i>=0;i--){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);var k=dayKey(d.getTime());arr.push({m:dayMins(k),today:i===0})}
+var streak=0;for(var j=arr.length-1;j>=0;j--){if(arr[j].m>0)streak++;else if(j===arr.length-1&&arr[j].today){continue}else break}
+var sv=$('#streakVal');if(sv)sv.innerHTML='<span class="streak-flame">'+ic('flag','sm')+'</span> '+fa(streak)+' <small>روز</small>';
+var sd=$('#streakDays');if(sd)sd.innerHTML=arr.map(function(x){return '<i class="'+(x.m>0?'hit':'')+(x.today?' today':'')+'" title="'+fa(x.m)+' دقیقه"></i>'}).join('');
+var rec=0,seen={};SLOG.forEach(function(s){var k=dayKey(s.ts);seen[k]=(seen[k]||0)+minsOf(s);if(seen[k]>rec)rec=seen[k]});
+var rv=$('#recordVal');if(rv)rv.innerHTML=fa(rec)+' <small>دقیقه</small>'}
+function weekReport(){
+var days=[];for(var i=6;i>=0;i--){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);var k=dayKey(d.getTime());days.push({d:d,m:dayMins(k)})}
+var total=days.reduce(function(a,x){return a+x.m},0);
+var per={};SLOG.forEach(function(s){var dd=new Date(s.ts);var now=new Date();var diff=(new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(dd.getFullYear(),dd.getMonth(),dd.getDate()))/864e5;if(diff>=0&&diff<7)per[s.subj]=(per[s.subj]||0)+minsOf(s)});
+var top=Object.keys(per).sort(function(a,b){return per[b]-per[a]})[0];
+var lines=['گزارش هفته ساعت مطالعه','———————'];
+days.forEach(function(x){lines.push(x.d.toLocaleDateString('fa-IR',{weekday:'long'})+': '+fa(x.m)+' دقیقه')});
+lines.push('———————','جمع هفته: '+fa(total)+' دقیقه');
+if(top)lines.push('بیشترین درس: '+top+' ('+fa(per[top])+' دقیقه)');
+return lines.join('\n')}
+$('#shareBtn').onclick=function(){var t=weekReport();var p=$('#sharePrev');p.hidden=false;p.textContent=t;p.scrollIntoView({behavior:'smooth',block:'center'});toast('گزارش ساخته شد')};
+$('#dlBtn').onclick=function(){
+var t=weekReport();var cv=document.createElement('canvas');cv.width=900;cv.height=560;var c=cv.getContext('2d');
+var dark=document.documentElement.dataset.mode!=='light';
+c.fillStyle=dark?'#08090a':'#f7f8f8';c.fillRect(0,0,900,560);
+c.fillStyle=dark?'#f7f8f8':'#08090a';c.font='bold 44px Vazirmatn, Tahoma';c.textAlign='right';c.fillText('گزارش هفته ساعت مطالعه',850,80);
+c.font='30px Vazirmatn, Tahoma';c.fillStyle=dark?'#d0d6e0':'#34343a';
+var lines=t.split('\n');var y=150;for(var i=1;i<lines.length;i++){c.fillText(lines[i],850,y);y+=52}
+var a=document.createElement('a');a.download='week-report.png';a.href=cv.toDataURL('image/png');a.click();toast('تصویر گزارش دانلود شد')};
 function saveGoal(){var v=parseInt(en($('#goalInp').value),10);if(!(v>=30&&v<=960)){toast('هدف باید بین ۳۰ تا ۹۶۰ باشد');return}UI.goal=v;saveUI();renderStats();toast('هدف روزانه ثبت شد — '+fa(v)+' دقیقه')}
 $('#goalSave').onclick=saveGoal;
 $('#goalInp').addEventListener('keydown',function(e){if(e.key==='Enter')saveGoal()});
