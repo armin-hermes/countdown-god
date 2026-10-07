@@ -9,15 +9,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ساعت مطالعه کنکور</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:'Rokh';src:url('fonts/rokh-400.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Rokh';src:url('fonts/rokh-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Rokh';src:url('fonts/rokh-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Rokh';src:url('fonts/rokh-800.woff2') format('woff2');font-weight:800;font-display:swap}
+@font-face{font-family:'Rokh';src:url('fonts/rokh-900.woff2') format('woff2');font-weight:900;font-display:swap}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg0:#08090a;--bg1:#0f1011;--bg2:#191a1b;--glass:rgba(20,21,26,.72);--tx0:#f7f8f8;--tx1:#d0d6e0;--tx2:#8a8f98;--tx3:#62666d;--ac:#f7f8f8;--ac2:#d0d6e0;--acsoft:rgba(255,255,255,.08);--ok:#f7f8f8;--ok2:#d0d6e0;--brk:#d0d6e0;--bad:#f7f8f8;--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.05);--r:16px;--shadow:0 16px 48px -20px rgba(0,0,0,.75);--mesh1:#2a2c33;--mesh2:#1c1e24;--mesh3:#101114;color-scheme:dark}
 [data-mode="light"]{--bg0:#f7f8f8;--bg1:#ffffff;--bg2:#f3f4f5;--glass:rgba(255,255,255,.82);--tx0:#08090a;--tx1:#34343a;--tx2:#62666d;--tx3:#8a8f98;--ac:#08090a;--ac2:#34343a;--acsoft:rgba(0,0,0,.06);--bd:rgba(0,0,0,.1);--bd2:rgba(0,0,0,.05);--shadow:0 16px 40px -24px rgba(20,25,60,.22);--mesh1:#e2e4e9;--mesh2:#d4d7de;--mesh3:#eef0f3;color-scheme:light}
 html{scroll-behavior:smooth}
-body{font-family:Vazirmatn,system-ui,Tahoma,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100dvh;font-size:15px;line-height:1.9;-webkit-tap-highlight-color:transparent;overflow-x:hidden;transition:background .25s,color .25s}
+body{font-family:Rokh,Vazirmatn,system-ui,Tahoma,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100dvh;font-size:15px;line-height:1.9;-webkit-tap-highlight-color:transparent;overflow-x:hidden;transition:background .25s,color .25s}
 button{font-family:inherit}input,select{font-family:inherit;font-size:16px}
 .ic{width:18px;height:18px;flex-shrink:0;vertical-align:-3px}
 .ic.sm{width:15px;height:15px}.ic.lg{width:24px;height:24px}
