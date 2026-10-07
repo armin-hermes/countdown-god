@@ -19,7 +19,7 @@
 :root{--bg0:#08090a;--bg1:#0f1011;--bg2:#191a1b;--glass:rgba(20,21,26,.72);--tx0:#f7f8f8;--tx1:#d0d6e0;--tx2:#8a8f98;--tx3:#62666d;--ac:#f7f8f8;--ac2:#d0d6e0;--acsoft:rgba(255,255,255,.08);--ok:#f7f8f8;--ok2:#d0d6e0;--brk:#d0d6e0;--bad:#f7f8f8;--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.05);--r:16px;--shadow:0 16px 48px -20px rgba(0,0,0,.75);--mesh1:#2a2c33;--mesh2:#1c1e24;--mesh3:#101114;color-scheme:dark}
 [data-mode="light"]{--bg0:#f7f8f8;--bg1:#ffffff;--bg2:#f3f4f5;--glass:rgba(255,255,255,.82);--tx0:#08090a;--tx1:#34343a;--tx2:#62666d;--tx3:#8a8f98;--ac:#08090a;--ac2:#34343a;--acsoft:rgba(0,0,0,.06);--bd:rgba(0,0,0,.1);--bd2:rgba(0,0,0,.05);--shadow:0 16px 40px -24px rgba(20,25,60,.22);--mesh1:#e2e4e9;--mesh2:#d4d7de;--mesh3:#eef0f3;color-scheme:light}
 html{scroll-behavior:smooth}
-body{font-family:Rokh,Vazirmatn,system-ui,Tahoma,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100dvh;font-size:15px;line-height:1.9;-webkit-tap-highlight-color:transparent;overflow-x:hidden;transition:background .25s,color .25s}
+body{font-family:Rokh,system-ui,Tahoma,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100dvh;font-size:15px;line-height:1.9;-webkit-tap-highlight-color:transparent;overflow-x:hidden;transition:background .25s,color .25s}
 button{font-family:inherit}input,select{font-family:inherit;font-size:16px}
 .ic{width:18px;height:18px;flex-shrink:0;vertical-align:-3px}
 .ic.sm{width:15px;height:15px}.ic.lg{width:24px;height:24px}
@@ -370,7 +370,7 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="note-grid" id="noteGrid"></div>
 </section>
 </main>
-<footer>ساعت مطالعه کنکور • ذخیره‌سازی محلی • Vazirmatn</footer>
+<footer>ساعت مطالعه کنکور • ذخیره‌سازی محلی • Rokh</footer>
 <div id="toastBox"></div>
 <script>
 (function(){
@@ -570,8 +570,8 @@ $('#dlBtn').onclick=function(){
 var t=weekReport();var cv=document.createElement('canvas');cv.width=900;cv.height=560;var c=cv.getContext('2d');
 var dark=document.documentElement.dataset.mode!=='light';
 c.fillStyle=dark?'#08090a':'#f7f8f8';c.fillRect(0,0,900,560);
-c.fillStyle=dark?'#f7f8f8':'#08090a';c.font='bold 44px Vazirmatn, Tahoma';c.textAlign='right';c.fillText('گزارش هفته ساعت مطالعه',850,80);
-c.font='30px Vazirmatn, Tahoma';c.fillStyle=dark?'#d0d6e0':'#34343a';
+c.fillStyle=dark?'#f7f8f8':'#08090a';c.font='bold 44px Rokh, Tahoma';c.textAlign='right';c.fillText('گزارش هفته ساعت مطالعه',850,80);
+c.font='30px Rokh, Tahoma';c.fillStyle=dark?'#d0d6e0':'#34343a';
 var lines=t.split('\n');var y=150;for(var i=1;i<lines.length;i++){c.fillText(lines[i],850,y);y+=52}
 var a=document.createElement('a');a.download='week-report.png';a.href=cv.toDataURL('image/png');a.click();toast('تصویر گزارش دانلود شد')};
 function saveGoal(){var v=parseInt(en($('#goalInp').value),10);if(!(v>=30&&v<=960)){toast('هدف باید بین ۳۰ تا ۹۶۰ باشد');return}UI.goal=v;saveUI();renderStats();toast('هدف روزانه ثبت شد — '+fa(v)+' دقیقه')}
