@@ -1,5 +1,5 @@
 /* Study timer offline cache */
-var CACHE = "study-timer-v1";
+var CACHE = "study-timer-v2";
 var CORE = ["./", "./index.html", "./manifest.webmanifest",
   "./fonts/rokh-400.woff2", "./fonts/rokh-500.woff2",
   "./fonts/rokh-700.woff2", "./fonts/rokh-800.woff2",
@@ -16,6 +16,15 @@ self.addEventListener("activate", function (e) {
 });
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  // navigations: network-first so updates reach users; fallback to cache offline
+  if (e.request.mode === "navigate") {
+    e.respondWith(fetch(e.request).then(function (res) {
+      var copy = res.clone();
+      caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+      return res;
+    }).catch(function () { return caches.match("./index.html"); }));
+    return;
+  }
   e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(function (hit) {
     return hit || fetch(e.request).then(function (res) {
       var copy = res.clone();
