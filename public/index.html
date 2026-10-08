@@ -213,7 +213,7 @@ body.widget .kpanel{display:none}
 /* tabs */
 .tabbar{position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;background:color-mix(in srgb,var(--bg0) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd2);padding:8px 12px;scrollbar-width:none}
 .tabbar::-webkit-scrollbar{display:none}
-.tabbar button{flex-shrink:0;border:1px solid var(--bd);background:var(--bg1);color:var(--tx1);font-weight:800;font-size:13px;border-radius:99px;padding:9px 17px;cursor:pointer;min-height:42px;display:flex;align-items:center;gap:7px;transition:all .2s}
+.tabbar button{flex:1 0 auto;justify-content:center;border:1px solid var(--bd);background:var(--bg1);color:var(--tx1);font-weight:800;font-size:13px;border-radius:99px;padding:9px 12px;cursor:pointer;min-height:42px;display:flex;align-items:center;gap:7px;transition:all .2s;white-space:nowrap}
 .tabbar button.on{background:var(--tx0);color:var(--bg0);border-color:transparent}
 .tabpage{display:none}
 .tabpage.on{display:block;animation:rise .35s cubic-bezier(.2,.7,.3,1) both}
@@ -296,6 +296,7 @@ main{padding:14px 10px 48px;gap:12px}
 .timer-card{padding:18px 14px 14px}
 .srow{padding:10px 2px}
 .planform{display:grid;grid-template-columns:110px 1fr 90px;gap:8px}
+.planform #planNote{grid-column:1/-1}
 .planform #planAdd{grid-row:span 2;min-height:100%}
 #planDayFilter{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:none;border:none;padding:0}
 #planDayFilter button{border:1px solid var(--bd);background:var(--bg1);border-radius:99px;white-space:nowrap}
