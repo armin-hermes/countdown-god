@@ -295,6 +295,19 @@ main{padding:14px 10px 48px;gap:12px}
 .hero{border-radius:18px}
 .timer-card{padding:18px 14px 14px}
 .srow{padding:10px 2px}
+.planform{display:grid;grid-template-columns:110px 1fr 90px;gap:8px}
+.planform #planAdd{grid-row:span 2;min-height:100%}
+#planDayFilter{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:none;border:none;padding:0}
+#planDayFilter button{border:1px solid var(--bd);background:var(--bg1);border-radius:99px;white-space:nowrap}
+#planDayFilter button.on{background:var(--tx0);color:var(--bg0);border-color:transparent}
+.planrow{flex-wrap:wrap;row-gap:6px}
+.planrow .bar{flex:1 1 100%}
+}
+@media(max-width:600px){
+.planform{grid-template-columns:1fr 1fr}
+.planform #planDay{grid-column:1/-1;max-width:none}
+.planform #planAdd{grid-column:1/-1;grid-row:auto;min-height:48px}
+#planDayFilter{grid-template-columns:repeat(4,1fr)}
 }
 @media(max-width:380px){
 .kchip{font-size:11.5px;padding:6px 10px}
@@ -372,8 +385,7 @@ main{padding:14px 10px 48px;gap:12px}
 <section class="card" aria-label="برنامه هفتگی">
 <h2>برنامه هفتگی</h2>
 <p class="sub">برای هر روز هفته بنویس چیکار می‌کنی؛ انجام که شد تیک بزن تا درصد موفقیتت حساب بشه.</p>
-<div class="row" style="margin-top:10px"><select class="inp" id="planDay" style="flex:1;max-width:130px"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><input class="inp" id="planSubj" placeholder="نام درس" style="flex:2" maxlength="30"><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr" style="flex:1;max-width:100px"><button class="btn sm" id="planAdd" style="min-height:48px">افزودن</button></div>
-<div class="row" style="margin-top:8px"><input class="inp" id="planNote" placeholder="توضیح (اختیاری) — مثلا فصل ۳ تا ۵" style="flex:1" maxlength="80"></div>
+<div class="planform" style="margin-top:10px"><select class="inp" id="planDay"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><input class="inp" id="planSubj" placeholder="نام درس" maxlength="30"><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr"><input class="inp" id="planNote" placeholder="توضیح (اختیاری) — مثلا فصل ۳ تا ۵" maxlength="80"><button class="btn sm" id="planAdd">افزودن</button></div>
 <div class="seg" id="planDayFilter" style="margin-top:10px"><button data-wd="all" class="on">کل هفته</button><button data-wd="6">شنبه</button><button data-wd="0">یکشنبه</button><button data-wd="1">دوشنبه</button><button data-wd="2">سه‌شنبه</button><button data-wd="3">چهارشنبه</button><button data-wd="4">پنجشنبه</button><button data-wd="5">جمعه</button></div>
 <div id="planList" style="margin-top:6px"></div>
 <div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">۰٪</span><small style="font-size:11px;color:var(--tx2);font-weight:600" id="succLbl">موفقیت هفته</small></div></div>
