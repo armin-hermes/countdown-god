@@ -385,10 +385,11 @@ function jal(d){try{return new Intl.DateTimeFormat('fa-IR',{year:'numeric',month
 /* localStorage keys: god.events.v1 (legacy, preserved untouched), god.ui.v1 (settings), god.study.v1 (session log — old entries keep working) */
 var LS_E='god.events.v1',LS_U='god.ui.v1',LS_S='god.study.v1';
 try{JSON.parse(localStorage.getItem(LS_E)||'[]')}catch(e){}
-var PALETTE=['#f7f8f8','#d0d6e0','#8a8f98','#62666d','#f7f8f8','#d0d6e0','#8a8f98','#62666d','#8a8f98'];
+var PALETTE=['#e5484d','#f76b15','#f5a524','#30a46c','#12a594','#3e9bff','#8e4ec6','#e93d82','#ff7eb6'];
+var OLDG=['#f7f8f8','#d0d6e0','#8a8f98','#62666d'];
 var DEF_SUBJ=['ریاضی','فیزیک','شیمی','زیست‌شناسی','ادبیات فارسی','عربی','زبان انگلیسی','سایر'].map(function(n,i){return{name:n,color:PALETTE[i%PALETTE.length]}});
 var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,focusLen:25,breakLen:5,tmode:'focus',accent:''};
-try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s){return{name:String(s.name).slice(0,30),color:s.color||'#8a8f98'}})}else if(k in UI||k==='subjects'){}else{continue}if(k!=='subjects')UI[k]=u[k]}}}catch(e){}
+try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s,si){var c=s.color||'#3e9bff';if(OLDG.indexOf(c)>=0)c=PALETTE[si%PALETTE.length];return{name:String(s.name).slice(0,30),color:c}})}else if(k in UI||k==='subjects'){}else{continue}if(k!=='subjects')UI[k]=u[k]}}}catch(e){}
 if(!UI.subjects.length)UI.subjects=DEF_SUBJ.slice();
 if(!UI.subjects.some(function(s){return s.name===UI.subject}))UI.subject=UI.subjects[0].name;
 UI.focusLen=Math.min(240,Math.max(1,+UI.focusLen||25));
@@ -487,7 +488,7 @@ document.addEventListener('keydown',function(e){if(e.code!=='Space'&&e.key!==' '
 $('#custom').addEventListener('input',function(e){var c=parseInt(en(e.target.value),10);if(c>=1&&c<=240){if(T.running)pauseT(true);if(isBreak())UI.breakLen=Math.min(60,c);else UI.focusLen=c;saveUI();T.total=(isBreak()?UI.breakLen:UI.focusLen)*60;T.remain=T.total;T.lastSec=-1;renderTimer()}});
 /* subjects */
 function selectSubject(n){if(!n)return;UI.subject=n;saveUI();renderChips();renderSubjList();renderTimer()}
-function renderChips(){var w=$('#subjChips');w.innerHTML=UI.subjects.map(function(s){return '<button class="chip'+(s.name===UI.subject?' on':'')+'" data-s="'+esc(s.name)+'"><span class="dot" style="background:'+s.color+'"></span>'+esc(s.name)+'</button>'}).join('');
+function renderChips(){var w=$('#subjChips');w.innerHTML=UI.subjects.map(function(s){var on=s.name===UI.subject;return '<button class="chip'+(on?' on':'')+'" data-s="'+esc(s.name)+'"'+(on?' style="border-color:'+s.color+';box-shadow:0 0 0 1px '+s.color+',0 8px 22px -12px '+s.color+'"':'')+'><span class="dot" style="background:'+s.color+'"></span>'+esc(s.name)+'</button>'}).join('');
 var bs=w.querySelectorAll('[data-s]');for(var i=0;i<bs.length;i++){bs[i].onclick=function(){selectSubject(this.dataset.s)}}}
 function renderSubjList(){var w=$('#subjList');var tk=dayKey(Date.now());var today={};SLOG.forEach(function(s){if(dayKey(s.ts)===tk)today[s.subj]=(today[s.subj]||0)+minsOf(s)});
 if(!UI.subjects.length){w.innerHTML='<div class="empty"><b>هنوز درسی نداری</b>اولین درس را بالا اضافه کن تا تمرکز را شروع کنی.</div>';return}
@@ -533,7 +534,7 @@ $('#goalTx').textContent=fa(tMins)+' از '+fa(g)+' دقیقه';
 var per={};tList.forEach(function(s){per[s.subj]=(per[s.subj]||0)+minsOf(s)});
 var names=Object.keys(per).sort(function(a,b){return per[b]-per[a]});
 var mx=Math.max.apply(null,[1].concat(names.map(function(n){return per[n]})));
-$('#perSubj').innerHTML=names.length?names.map(function(n){return '<div style="display:flex;align-items:center;gap:8px;margin-top:9px"><span class="dot" style="background:'+colorOf(n)+'"></span><span style="font-size:13px;min-width:86px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(n)+'</span><div class="bar" style="flex:1"><i style="width:'+Math.round(per[n]/mx*100)+'%"></i></div><span class="evmeta" style="min-width:66px;text-align:left;font-variant-numeric:tabular-nums">'+fa(per[n])+' دقیقه</span></div>'}).join(''):'<div class="empty"><b>امروز هنوز تمرکزی ثبت نشده</b>یک درس انتخاب کن و اولین نشست را شروع کن.</div>';
+$('#perSubj').innerHTML=names.length?names.map(function(n){return '<div style="display:flex;align-items:center;gap:8px;margin-top:9px"><span class="dot" style="background:'+colorOf(n)+'"></span><span style="font-size:13px;min-width:86px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(n)+'</span><div class="bar" style="flex:1"><i style="width:'+Math.round(per[n]/mx*100)+'%;background:'+colorOf(n)+'"></i></div><span class="evmeta" style="min-width:66px;text-align:left;font-variant-numeric:tabular-nums">'+fa(per[n])+' دقیقه</span></div>'}).join(''):'<div class="empty"><b>امروز هنوز تمرکزی ثبت نشده</b>یک درس انتخاب کن و اولین نشست را شروع کن.</div>';
 var days=[];for(var i=6;i>=0;i--){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);var k=dayKey(d.getTime());var m=SLOG.filter(function(s){return dayKey(s.ts)===k}).reduce(function(a,s){return a+minsOf(s)},0);days.push({d:d,m:m,today:i===0})}
 var mmax=Math.max.apply(null,[10].concat(days.map(function(x){return x.m})));
 var wTotal=days.reduce(function(a,x){return a+x.m},0);
