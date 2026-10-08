@@ -135,7 +135,7 @@ main>section:nth-child(2){animation-delay:.06s}
 main>section:nth-child(3){animation-delay:.12s}
 main>section:nth-child(4){animation-delay:.18s}
 main>section:nth-child(5){animation-delay:.24s}
-.hero .logo,.dial.run{animation:floaty 3.2s ease-in-out infinite}
+.hero .logo{animation:floaty 3.2s ease-in-out infinite}
 #btnStart:not(:disabled){animation:btn-glow 2.6s ease-in-out infinite}
 @keyframes btn-glow{0%,100%{box-shadow:0 8px 24px -10px rgba(0,0,0,.5)}50%{box-shadow:0 8px 32px -6px rgba(255,255,255,.22)}}
 .bar>i{transform-origin:right;animation:bar-grow .7s cubic-bezier(.2,.7,.3,1) both}
@@ -145,8 +145,7 @@ main>section:nth-child(5){animation-delay:.24s}
 .chip:hover{transform:translateY(-2px) scale(1.03)}
 .modetabs button,.btn,.mini,.iconbtn{transition:transform .15s,box-shadow .25s,border-color .2s,background .25s,filter .2s}
 .face .t{transition:transform .2s}
-.dial.run .face .t{animation:tick-pulse 1s ease-in-out infinite}
-@keyframes tick-pulse{0%,100%{transform:scale(1)}12%{transform:scale(1.025)}}
+.dial.run .face .t{animation:none}
 .badge{transition:background .3s,color .3s,border-color .3s}
 .note-card{transition:transform .2s,border-color .25s,box-shadow .25s}
 .note-card:hover{transform:translateY(-2px);border-color:var(--ac);box-shadow:var(--shadow)}
@@ -212,9 +211,13 @@ footer{text-align:center;color:var(--tx3);font-size:12px;padding:0 14px 28px}
 .heat .h{flex:1;border-radius:4px;background:var(--bg2);border:1px solid var(--bd2);min-height:6px}
 .heat .h.hot{background:var(--ac);border-color:transparent}
 /* widget mode: only timer */
-body.widget main>*:not(.hero){display:none}
+body.widget .tabbar{display:none}
+body.widget main>*:not(#tab-timer){display:none}
+body.widget #tab-timer{display:block}
 body.widget .topbar>*:not(.brand){display:none}
 body.widget .kpanel{display:none}
+body.widget .hero{box-shadow:none}
+body.widget main{padding:10px}
 /* tabs */
 .tabbar{position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;background:color-mix(in srgb,var(--bg0) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd2);padding:8px 12px;scrollbar-width:none}
 .tabbar::-webkit-scrollbar{display:none}
