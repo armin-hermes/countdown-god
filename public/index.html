@@ -318,11 +318,11 @@ main{padding:14px 10px 48px;gap:12px}
 <button class="iconbtn" id="modeBtn" title="حالت روشن / تیره" aria-label="تغییر حالت"></button>
 </header>
 <nav class="tabbar" id="tabbar" aria-label="بخش‌ها">
-<button data-tab="timer" class="on">⏱ تایمر</button>
-<button data-tab="plan">📋 برنامه روزانه</button>
-<button data-tab="stats">📊 آمار</button>
-<button data-tab="tasks">✅ کارها و یادداشت</button>
-<button data-tab="more">⚙️ امکانات</button>
+<button data-tab="timer" class="on">تایمر</button>
+<button data-tab="plan">برنامه هفتگی</button>
+<button data-tab="stats">آمار</button>
+<button data-tab="tasks">کارها و یادداشت</button>
+<button data-tab="more">امکانات</button>
 </nav>
 <main>
 <div class="kpanel" id="kPanel"><div class="card" style="margin-bottom:0">
@@ -369,13 +369,14 @@ main{padding:14px 10px 48px;gap:12px}
 </div>
 
 <div class="tabpage" id="tab-plan">
-<section class="card" aria-label="برنامه روزانه">
-<h2>📋 برنامه روزانه</h2>
-<p class="sub">بگو امروز قراره هر درس رو چقدر بخونی؛ آخر شب درصد موفقیتت رو می‌بینی.</p>
-<div class="row" style="margin-top:10px"><input class="inp" id="planSubj" placeholder="نام درس" style="flex:2" maxlength="30"><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr" style="flex:1"><button class="btn sm" id="planAdd" style="min-height:48px">افزودن</button></div>
+<section class="card" aria-label="برنامه هفتگی">
+<h2>برنامه هفتگی</h2>
+<p class="sub">برای هر روز هفته بنویس چیکار می‌کنی؛ انجام که شد تیک بزن تا درصد موفقیتت حساب بشه.</p>
+<div class="row" style="margin-top:10px"><select class="inp" id="planDay" style="flex:1;max-width:130px"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><input class="inp" id="planSubj" placeholder="نام درس" style="flex:2" maxlength="30"><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr" style="flex:1;max-width:100px"><button class="btn sm" id="planAdd" style="min-height:48px">افزودن</button></div>
 <div class="row" style="margin-top:8px"><input class="inp" id="planNote" placeholder="توضیح (اختیاری) — مثلا فصل ۳ تا ۵" style="flex:1" maxlength="80"></div>
+<div class="seg" id="planDayFilter" style="margin-top:10px"><button data-wd="all" class="on">کل هفته</button><button data-wd="6">شنبه</button><button data-wd="0">یکشنبه</button><button data-wd="1">دوشنبه</button><button data-wd="2">سه‌شنبه</button><button data-wd="3">چهارشنبه</button><button data-wd="4">پنجشنبه</button><button data-wd="5">جمعه</button></div>
 <div id="planList" style="margin-top:6px"></div>
-<div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">۰٪</span><small style="font-size:11px;color:var(--tx2);font-weight:600">موفقیت امروز</small></div></div>
+<div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">۰٪</span><small style="font-size:11px;color:var(--tx2);font-weight:600" id="succLbl">موفقیت هفته</small></div></div>
 <p class="evmeta" id="succTx" style="text-align:center;margin-top:4px"></p>
 </section>
 </div>
@@ -496,7 +497,11 @@ flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path
 zap:'<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
 cup:'<path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M7 2v2M11 2v2M15 2v2"/>',
 exp:'<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
-tgt:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'
+tgt:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+chart:'<path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/>',
+list:'<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>'
 };
 function ic(n,cls){return '<svg class="ic '+(cls||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||P.flag)+'</svg>'}
 function toast(m){var b=$('#toastBox');b.innerHTML='<div class="toast">'+esc(m)+'</div>';clearTimeout(b._t);b._t=setTimeout(function(){b.innerHTML=''},3000)}
@@ -753,13 +758,23 @@ function showTab(t){UI.tab=t;try{saveUI()}catch(e){}var bs=document.querySelecto
 /* daily planner */
 var PLAN=[];try{PLAN=JSON.parse(localStorage.getItem('god.plan.v1')||'[]');if(!Array.isArray(PLAN))PLAN=[]}catch(e){PLAN=[]}
 function savePlan(){try{localStorage.setItem('god.plan.v1',JSON.stringify(PLAN.slice(-60)))}catch(e){}}
+var WD=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+function planDayName(wd){return WD[+wd]||''}
+function planDayLabel(p){if(p.wd==null||p.wd==='')return planKey();return planDayName(p.wd)}
+function planDoneFor(p){if(p.day){var m=0;SLOG.forEach(function(s){if(dayKey(s.ts)===p.day&&s.subj===p.subj)m+=minsOf(s)});return m}return p.done?999999:0}
+var PLANFILTER='all';
 function planKey(){var d=new Date();return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()}
 function todayPlanMins(name){var tk=dayKey(Date.now());var m=0;SLOG.forEach(function(s){if(dayKey(s.ts)===tk&&s.subj===name)m+=minsOf(s)});return m}
-function planAdd(){var s=($('#planSubj')||{}).value||'';s=s.trim().slice(0,30);var m=parseInt(en((($('#planMins')||{}).value)||''),10);var nt=(($('#planNote')||{}).value||'').trim().slice(0,80);if(!s){toast('نام درس را بنویس');return}if(!(m>=5&&m<=960)){toast('دقیقه باید بین ۵ تا ۹۶۰ باشد');return}if(PLAN.some(function(p){return p.day===planKey()&&p.subj===s})){toast('این درس امروز هست');return}PLAN.push({day:planKey(),subj:s,goal:m,note:nt,ts:Date.now()});savePlan();$('#planSubj').value='';$('#planMins').value='';$('#planNote').value='';renderPlan();toast('به برنامه امروز اضافه شد')}
+function planAdd(){var s=($('#planSubj')||{}).value||'';s=s.trim().slice(0,30);var m=parseInt(en((($('#planMins')||{}).value)||''),10);var nt=(($('#planNote')||{}).value||'').trim().slice(0,80);var wd=(($('#planDay')||{}).value||'');if(wd==='')wd=String((new Date().getDay()+1)%7);if(!s){toast('نام درس را بنویس');return}if(!(m>=5&&m<=960)){toast('دقیقه باید بین ۵ تا ۹۶۰ باشد');return}if(PLAN.some(function(p){return String(p.wd)===String(wd)&&p.subj===s})){toast('این درس این روز هست');return}PLAN.push({wd:String(wd),day:'',subj:s,goal:m,note:nt,done:false,ts:Date.now()});savePlan();$('#planSubj').value='';$('#planMins').value='';$('#planNote').value='';renderPlan();toast('به برنامه '+planDayName(wd)+' اضافه شد')}
 function planDel(i){PLAN.splice(i,1);savePlan();renderPlan()}
-function renderPlan(){var w=$('#planList');if(!w)return;var tk=planKey();var arr=PLAN.map(function(p,i){return{p:p,i:i}}).filter(function(x){return x.p.day===tk});var totG=0,totD=0;arr.forEach(function(x){totG+=x.p.goal;totD+=Math.min(todayPlanMins(x.p.subj),x.p.goal)});if(!arr.length){w.innerHTML='<div class="empty"><b>برنامه‌ای نیست</b>بالا بنویس امروز هر درس را چند دقیقه می‌خوانی.</div>'}else{w.innerHTML=arr.map(function(x){var p=x.p;var done=todayPlanMins(p.subj);var pct=Math.min(100,Math.round(done/p.goal*100));var ok=done>=p.goal;return '<div class="planrow"><span class="dot" style="background:'+colorOf(p.subj)+'"></span><span class="nm">'+esc(p.subj)+(p.note?' <small style="color:var(--tx2);font-weight:400">• '+esc(p.note)+'</small>':'')+'</span><span class="evmeta">'+fa(done)+' از '+fa(p.goal)+' دقیقه</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'')+'"></i></div><button class="mini del" data-pdel="'+x.i+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join('');var bs=w.querySelectorAll('[data-pdel]');for(var j=0;j<bs.length;j++){bs[j].onclick=(function(el){return function(){planDel(+el.dataset.pdel)}})(bs[j])}}var pct=totG?Math.round(totD/totG*100):0;var ring=$('#succRing');if(ring)ring.hidden=!arr.length;var arc=$('#succArc');if(arc)arc.style.strokeDashoffset=String(326.7*(1-pct/100));var sp=$('#succPct');if(sp)sp.textContent=fa(pct)+'٪';var st=$('#succTx');if(st)st.textContent=arr.length?('امروز '+fa(totD)+' از '+fa(totG)+' دقیقه برنامه ('+fa(pct)+'٪)') :''}
+function renderPlan(){var w=$('#planList');if(!w)return;var arr=PLAN.map(function(p,i){return{p:p,i:i}}).filter(function(x){return PLANFILTER==='all'||String(x.p.wd)===String(PLANFILTER)});var totG=0,totD=0;arr.forEach(function(x){totG+=1;var dn=planDoneFor(x.p);if(dn>=x.p.goal||x.p.done)totD+=1});if(!arr.length){w.innerHTML='<div class="empty"><b>برنامه‌ای نیست</b>بالا برای هر روز هفته بنویس چیکار می‌کنی.</div>'}else{w.innerHTML=arr.map(function(x){var p=x.p;var dn=planDoneFor(p);var pct=Math.min(100,Math.round(dn/p.goal*100));var ok=dn>=p.goal||p.done;return '<div class="planrow'+(ok?' done':'')+'"><span class="tickbox'+(ok?' on':'')+'" data-ptick="'+x.i+'" style="'+(ok?'background:var(--tx0);border-color:var(--tx0);color:var(--bg0)':'')+'">'+ic('check','sm')+'</span><span class="dot" style="background:'+colorOf(p.subj)+'"></span><span class="nm">'+esc(p.subj)+' <span class="badge" style="font-size:10px;padding:1px 9px">'+planDayLabel(p)+'</span>'+(p.note?' <small style="color:var(--tx2);font-weight:400">• '+esc(p.note)+'</small>':'')+'</span><span class="evmeta">'+fa(Math.min(dn,p.goal))+' از '+fa(p.goal)+' دقیقه</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'')+'"></i></div><button class="mini del" data-pdel="'+x.i+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join('');var bs=w.querySelectorAll('[data-pdel]');for(var j=0;j<bs.length;j++){bs[j].onclick=(function(el){return function(e){e.stopPropagation();planDel(+el.dataset.pdel)}})(bs[j])}var ts=w.querySelectorAll('[data-ptick]');for(var k=0;k<ts.length;k++){ts[k].onclick=(function(el){return function(){var p=PLAN[+el.dataset.ptick];p.done=!p.done;savePlan();renderPlan();toast(p.done?'انجام شد':'برگشت به باز')}})(ts[k])}}var pct=totG?Math.round(totD/totG*100):0;var ring=$('#succRing');if(ring)ring.hidden=!arr.length;var arc=$('#succArc');if(arc)arc.style.strokeDashoffset=String(326.7*(1-pct/100));var sp=$('#succPct');if(sp)sp.textContent=fa(pct)+'٪';var st=$('#succTx');if(st)st.textContent=arr.length?('این '+(PLANFILTER==='all'?'هفته':planDayName(PLANFILTER))+': '+fa(totD)+' از '+fa(totG)+' برنامه انجام شده ('+fa(pct)+'٪)') :'';var sl=$('#succLbl');if(sl)sl.textContent=PLANFILTER==='all'?'موفقیت هفته':('موفقیت '+planDayName(PLANFILTER))}
 $('#planAdd').onclick=planAdd;
 $('#planNote').addEventListener('keydown',function(e){if(e.key==='Enter')planAdd()});
+(function(){var bs=document.querySelectorAll('#planDayFilter [data-wd]');for(var i=0;i<bs.length;i++){bs[i].onclick=(function(b){return function(){PLANFILTER=b.dataset.wd;for(var k=0;k<bs.length;k++)bs[k].classList.remove('on');b.classList.add('on');renderPlan()}})(bs[i])}})();
+/* migrate old daily plans: assign weekday from day stamp */
+(function(){var ch=false;PLAN.forEach(function(p){if(p.wd==null||p.wd===''){try{var d=p.day?new Date(p.day):new Date(p.ts);p.wd=String((d.getDay()+1)%7)}catch(e){p.wd=String((new Date().getDay()+1)%7)}ch=true}});if(ch)savePlan()})();
+/* paint tabbar + section icons */
+(function(){var tb={timer:'tgt',plan:'cal',stats:'chart',tasks:'check',more:'gear'};var bs=document.querySelectorAll('#tabbar [data-tab]');for(var i=0;i<bs.length;i++){var t=bs[i].dataset.tab;bs[i].innerHTML=ic(tb[t]||'flag','sm')+' '+bs[i].textContent.trim()}})();
 /* mode */
 function renderMode(){document.documentElement.dataset.mode=UI.mode;var mb=$('#modeBtn');mb.innerHTML=ic(UI.mode==='dark'?'moon':'sun','sm');var mc=document.querySelector('meta[name="theme-color"]');if(mc)mc.content=UI.mode==='dark'?'#08090a':'#eef0f4'}
 $('#modeBtn').onclick=function(){UI.mode=UI.mode==='dark'?'light':'dark';saveUI();renderMode()};
