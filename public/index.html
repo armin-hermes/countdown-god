@@ -51,13 +51,13 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 .modetabs button{flex:1;border:none;background:transparent;color:var(--tx2);font-weight:800;font-size:13.5px;border-radius:9px;padding:10px;cursor:pointer;min-height:46px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
 .modetabs button.on{background:var(--tx0);color:var(--bg0);box-shadow:none}
 .modetabs button.on.brk{background:var(--tx0);color:var(--bg0);box-shadow:none}
-.dial{position:relative;width:min(248px,64vw);height:min(248px,64vw);margin:14px auto 4px}
+.dial{position:relative;width:min(264px,70vw);height:min(264px,70vw);margin:14px auto 4px}
 .dial svg{transform:rotate(-90deg);width:100%;height:100%}
 #ring{transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1),stroke .3s}
 .dial.run #ring{animation:none}
 @keyframes ringpulse{0%,100%{filter:drop-shadow(0 0 6px rgba(255,255,255,.15))}50%{filter:drop-shadow(0 0 16px rgba(255,255,255,.35))}}
 .face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.face .t{font-size:clamp(44px,16vw,72px);font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;line-height:1.1;letter-spacing:-1px}
+.face .t{font-size:clamp(38px,12vw,56px);font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;line-height:1.15;letter-spacing:-.5px;padding:0 6px}
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.8px;font-weight:700;border-radius:99px;padding:4px 13px;background:var(--bg2);border:1px solid var(--bd);color:var(--tx1)}
 .badge.ok,.badge.brk,.badge.ac{background:var(--tx0);color:var(--bg0);border-color:transparent}
 .fsubj{font-size:13px;color:var(--tx2);display:flex;align-items:center;gap:6px}
@@ -210,6 +210,20 @@ footer{text-align:center;color:var(--tx3);font-size:12px;padding:0 14px 28px}
 body.widget main>*:not(.hero){display:none}
 body.widget .topbar>*:not(.brand){display:none}
 body.widget .kpanel{display:none}
+/* tabs */
+.tabbar{position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;background:color-mix(in srgb,var(--bg0) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd2);padding:8px 12px;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbar button{flex-shrink:0;border:1px solid var(--bd);background:var(--bg1);color:var(--tx1);font-weight:800;font-size:13px;border-radius:99px;padding:9px 17px;cursor:pointer;min-height:42px;display:flex;align-items:center;gap:7px;transition:all .2s}
+.tabbar button.on{background:var(--tx0);color:var(--bg0);border-color:transparent}
+.tabpage{display:none}
+.tabpage.on{display:block;animation:rise .35s cubic-bezier(.2,.7,.3,1) both}
+/* planner */
+.planrow{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--bd2);flex-wrap:wrap}
+.planrow:last-child{border-bottom:none}
+.planrow .nm{font-size:13.5px;font-weight:700;flex:1;min-width:110px}
+.succring{position:relative;width:120px;height:120px;margin:10px auto}
+.succring svg{transform:rotate(-90deg)}
+.succring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:22px}
 /* zen / focus mode */
 body.zen main>*:not(.hero){opacity:.12;filter:blur(3px);pointer-events:none;user-select:none}
 body.zen .topbar>*:not(.brand){opacity:.25;pointer-events:none}
@@ -303,6 +317,13 @@ main{padding:14px 10px 48px;gap:12px}
 <button class="kchip" id="kChip" aria-label="شمارش تا کنکور"></button>
 <button class="iconbtn" id="modeBtn" title="حالت روشن / تیره" aria-label="تغییر حالت"></button>
 </header>
+<nav class="tabbar" id="tabbar" aria-label="بخش‌ها">
+<button data-tab="timer" class="on">⏱ تایمر</button>
+<button data-tab="plan">📋 برنامه روزانه</button>
+<button data-tab="stats">📊 آمار</button>
+<button data-tab="tasks">✅ کارها و یادداشت</button>
+<button data-tab="more">⚙️ امکانات</button>
+</nav>
 <main>
 <div class="kpanel" id="kPanel"><div class="card" style="margin-bottom:0">
 <p class="lbl" style="margin-top:0">تاریخ برگزاری کنکور</p>
@@ -310,6 +331,7 @@ main{padding:14px 10px 48px;gap:12px}
 <p class="evmeta" id="kJal" style="margin-top:6px"></p>
 </div></div>
 
+<div class="tabpage on" id="tab-timer">
 <section class="hero" aria-label="تایمر تمرکز">
 <div class="timer-card">
 <h2 style="font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:9px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ac2)"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg> تایمر تمرکز <span style="flex:1"></span><span class="badge" id="sessBadge">۰ نشست امروز</span></h2>
@@ -344,7 +366,21 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="row" style="margin-top:10px"><input class="inp" id="newSubj" placeholder="نام درس تازه" style="flex:1" maxlength="30"><button class="btn sm" id="addSubj" style="min-height:48px">افزودن</button></div>
 <div id="subjList" style="margin-top:6px"></div>
 </section>
+</div>
 
+<div class="tabpage" id="tab-plan">
+<section class="card" aria-label="برنامه روزانه">
+<h2>📋 برنامه روزانه</h2>
+<p class="sub">بگو امروز قراره هر درس رو چقدر بخونی؛ آخر شب درصد موفقیتت رو می‌بینی.</p>
+<div class="row" style="margin-top:10px"><input class="inp" id="planSubj" placeholder="نام درس" style="flex:2" maxlength="30"><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr" style="flex:1"><button class="btn sm" id="planAdd" style="min-height:48px">افزودن</button></div>
+<div class="row" style="margin-top:8px"><input class="inp" id="planNote" placeholder="توضیح (اختیاری) — مثلا فصل ۳ تا ۵" style="flex:1" maxlength="80"></div>
+<div id="planList" style="margin-top:6px"></div>
+<div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">۰٪</span><small style="font-size:11px;color:var(--tx2);font-weight:600">موفقیت امروز</small></div></div>
+<p class="evmeta" id="succTx" style="text-align:center;margin-top:4px"></p>
+</section>
+</div>
+
+<div class="tabpage" id="tab-stats">
 <section class="card" aria-label="آمار امروز">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg> آمار امروز</h2>
 <div class="row" style="margin-top:10px;align-items:flex-end">
@@ -375,7 +411,9 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="lbl">دفترچه نشست‌ها</div>
 <div id="logList"></div>
 </section>
+</div>
 
+<div class="tabpage" id="tab-tasks">
 <section class="card" aria-label="کارهای امروز">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> کارهای امروز <span class="badge" id="todoBadge">۰ باز</span></h2>
 <p class="sub">تست، مرور، خلاصه — با اولویت. تیک که بزنی میره ته لیست.</p>
@@ -389,7 +427,9 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="row" style="margin-top:10px"><button class="btn sm" id="addNote" style="min-height:48px">یادداشت تازه</button></div>
 <div class="note-grid" id="noteGrid"></div>
 </section>
+</div>
 
+<div class="tabpage" id="tab-more">
 <section class="card" aria-label="تم و امکانات">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> تم و امکانات</h2>
 <p class="lbl">تم رنگی</p>
@@ -403,6 +443,7 @@ main{padding:14px 10px 48px;gap:12px}
 <p class="lbl">نصب و ویجت</p>
 <div class="row"><button class="btn sm" id="installBtn" style="flex:1">نصب اپ روی گوشی</button><a class="btn sm ghost" id="widgetBtn" href="?widget=1">نمای ویجت</a></div>
 </section>
+</div>
 </main>
 <footer>ساعت مطالعه کنکور • ذخیره‌سازی محلی • Rokh</footer>
 <div id="toastBox"></div>
@@ -581,7 +622,7 @@ var last=SLOG.map(function(s,idx){return{s:s,idx:idx}}).slice(-15).reverse();
 $('#logList').innerHTML=last.length?last.map(function(x){var s=x.s;var d=new Date(s.ts);var dl=dayKey(s.ts)===tk?'امروز':jal(d);
 return '<div class="lrow"><span class="dot" style="background:'+colorOf(s.subj)+'"></span><b>'+esc(s.subj)+'</b><span class="evmeta">'+fa(minsOf(s))+' دقیقه</span><span style="flex:1"></span><span class="evmeta">'+faPad(d.getHours())+':'+faPad(d.getMinutes())+' • '+dl+'</span><button class="mini del" data-log="'+x.idx+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join(''):'<div class="empty"><b>دفترچه خالی است</b>نشست‌های تمرکزت اینجا ثبت می‌شوند.</div>';
 var bs=$('#logList').querySelectorAll('[data-log]');for(var j=0;j<bs.length;j++){bs[j].onclick=function(){if(!window.confirm('این نشست حذف شود؟'))return;SLOG.splice(+this.dataset.log,1);saveStudy();renderStats();renderSess();toast('نشست حذف شد')}}
-renderStreak(days);renderSess();try{renderMonth()}catch(e){}}
+renderStreak(days);renderSess();try{renderMonth()}catch(e){}try{if(typeof renderPlan==='function')renderPlan()}catch(e){}}
 function dayMins(key){return SLOG.filter(function(s){return dayKey(s.ts)===key}).reduce(function(a,s){return a+minsOf(s)},0)}
 function renderStreak(days){
 var arr=[];for(var i=6;i>=0;i--){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);var k=dayKey(d.getTime());arr.push({m:dayMins(k),today:i===0})}
@@ -705,11 +746,25 @@ var deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=$('#installBtn');if(b)b.textContent='نصب اپ روی گوشی'});
 $('#installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null})}else toast('از منوی مرورگر گزینه Add to Home Screen را بزن')};
 if(location.search.indexOf('widget')>=0)document.body.classList.add('widget');
+/* tabs */
+var TABS=['timer','plan','stats','tasks','more'];
+function showTab(t){UI.tab=t;try{saveUI()}catch(e){}var bs=document.querySelectorAll('#tabbar [data-tab]');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].dataset.tab===t);for(var j=0;j<TABS.length;j++){var p=document.getElementById('tab-'+TABS[j]);if(p)p.classList.toggle('on',TABS[j]===t)}try{if(t==='stats'&&typeof renderStats==='function')renderStats()}catch(e){}}
+(function(){var bs=document.querySelectorAll('#tabbar [data-tab]');for(var i=0;i<bs.length;i++){bs[i].onclick=(function(b){return function(){showTab(b.dataset.tab);window.scrollTo({top:0,behavior:'smooth'})}})(bs[i])}})();
+/* daily planner */
+var PLAN=[];try{PLAN=JSON.parse(localStorage.getItem('god.plan.v1')||'[]');if(!Array.isArray(PLAN))PLAN=[]}catch(e){PLAN=[]}
+function savePlan(){try{localStorage.setItem('god.plan.v1',JSON.stringify(PLAN.slice(-60)))}catch(e){}}
+function planKey(){var d=new Date();return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()}
+function todayPlanMins(name){var tk=dayKey(Date.now());var m=0;SLOG.forEach(function(s){if(dayKey(s.ts)===tk&&s.subj===name)m+=minsOf(s)});return m}
+function planAdd(){var s=($('#planSubj')||{}).value||'';s=s.trim().slice(0,30);var m=parseInt(en((($('#planMins')||{}).value)||''),10);var nt=(($('#planNote')||{}).value||'').trim().slice(0,80);if(!s){toast('نام درس را بنویس');return}if(!(m>=5&&m<=960)){toast('دقیقه باید بین ۵ تا ۹۶۰ باشد');return}if(PLAN.some(function(p){return p.day===planKey()&&p.subj===s})){toast('این درس امروز هست');return}PLAN.push({day:planKey(),subj:s,goal:m,note:nt,ts:Date.now()});savePlan();$('#planSubj').value='';$('#planMins').value='';$('#planNote').value='';renderPlan();toast('به برنامه امروز اضافه شد')}
+function planDel(i){PLAN.splice(i,1);savePlan();renderPlan()}
+function renderPlan(){var w=$('#planList');if(!w)return;var tk=planKey();var arr=PLAN.map(function(p,i){return{p:p,i:i}}).filter(function(x){return x.p.day===tk});var totG=0,totD=0;arr.forEach(function(x){totG+=x.p.goal;totD+=Math.min(todayPlanMins(x.p.subj),x.p.goal)});if(!arr.length){w.innerHTML='<div class="empty"><b>برنامه‌ای نیست</b>بالا بنویس امروز هر درس را چند دقیقه می‌خوانی.</div>'}else{w.innerHTML=arr.map(function(x){var p=x.p;var done=todayPlanMins(p.subj);var pct=Math.min(100,Math.round(done/p.goal*100));var ok=done>=p.goal;return '<div class="planrow"><span class="dot" style="background:'+colorOf(p.subj)+'"></span><span class="nm">'+esc(p.subj)+(p.note?' <small style="color:var(--tx2);font-weight:400">• '+esc(p.note)+'</small>':'')+'</span><span class="evmeta">'+fa(done)+' از '+fa(p.goal)+' دقیقه</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'')+'"></i></div><button class="mini del" data-pdel="'+x.i+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join('');var bs=w.querySelectorAll('[data-pdel]');for(var j=0;j<bs.length;j++){bs[j].onclick=(function(el){return function(){planDel(+el.dataset.pdel)}})(bs[j])}}var pct=totG?Math.round(totD/totG*100):0;var ring=$('#succRing');if(ring)ring.hidden=!arr.length;var arc=$('#succArc');if(arc)arc.style.strokeDashoffset=String(326.7*(1-pct/100));var sp=$('#succPct');if(sp)sp.textContent=fa(pct)+'٪';var st=$('#succTx');if(st)st.textContent=arr.length?('امروز '+fa(totD)+' از '+fa(totG)+' دقیقه برنامه ('+fa(pct)+'٪)') :''}
+$('#planAdd').onclick=planAdd;
+$('#planNote').addEventListener('keydown',function(e){if(e.key==='Enter')planAdd()});
 /* mode */
 function renderMode(){document.documentElement.dataset.mode=UI.mode;var mb=$('#modeBtn');mb.innerHTML=ic(UI.mode==='dark'?'moon':'sun','sm');var mc=document.querySelector('meta[name="theme-color"]');if(mc)mc.content=UI.mode==='dark'?'#08090a':'#eef0f4'}
 $('#modeBtn').onclick=function(){UI.mode=UI.mode==='dark'?'light':'dark';saveUI();renderMode()};
 /* boot */
-renderMode();renderKonkour();renderChips();renderSubjList();renderTimer();renderStats();applyTheme();renderRem();
+if(UI.tab&&TABS.indexOf(UI.tab)>=0)showTab(UI.tab);renderMode();renderKonkour();renderChips();renderSubjList();renderTimer();renderStats();applyTheme();renderRem();renderPlan();
 setInterval(function(){if(!T.running)renderKonkour()},60000);
 })();
 </script>
