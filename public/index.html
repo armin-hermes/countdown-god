@@ -774,7 +774,7 @@ var deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=$('#installBtn');if(b)b.textContent='نصب اپ روی گوشی'});
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js')}catch(e){}}
 $('#installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null})}else toast('از منوی مرورگر گزینه Add to Home Screen را بزن')};
-if(location.search.indexOf('widget')>=0)document.body.classList.add('widget');
+if(location.search.indexOf('widget')>=0){document.body.classList.add('widget');try{UI.tab='timer'}catch(e){}document.querySelectorAll('.tabpage').forEach(function(p){p.classList.toggle('on',p.id==='tab-timer')});}
 /* tabs */
 var TABS=['timer','plan','stats','tasks','more'];
 function showTab(t){UI.tab=t;try{saveUI()}catch(e){}var bs=document.querySelectorAll('#tabbar [data-tab]');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].dataset.tab===t);for(var j=0;j<TABS.length;j++){var p=document.getElementById('tab-'+TABS[j]);if(p)p.classList.toggle('on',TABS[j]===t)}try{if(t==='stats'&&typeof renderStats==='function')renderStats()}catch(e){}}
