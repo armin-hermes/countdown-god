@@ -233,8 +233,8 @@ body.widget main{padding:10px}
 .succring svg{transform:rotate(-90deg)}
 .succring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:22px}
 /* zen / focus mode */
-body.zen main>*:not(.hero){opacity:.12;filter:blur(3px);pointer-events:none;user-select:none}
-body.zen .topbar>*:not(.brand){opacity:.25;pointer-events:none}
+body.zen main>*:not(.hero){opacity:.06;pointer-events:none;user-select:none}
+body.zen .tabbar{opacity:.25;pointer-events:none}
 body.zen .hero{box-shadow:0 0 0 1px var(--tx0),0 24px 80px -20px rgba(0,0,0,.5)}
 .zenhint{display:none;text-align:center;font-size:12px;color:var(--tx2);margin-top:8px}
 body.zen .zenhint{display:block}
@@ -772,7 +772,7 @@ $('#monthDl').onclick=function(){var t=monthReport();var cv=document.createEleme
 /* PWA install + widget mode */
 var deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=$('#installBtn');if(b)b.textContent='نصب اپ روی گوشی'});
-if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js')}catch(e){}}
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js',{updateViaCache:'none'})}catch(e){}}
 $('#installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null})}else toast('از منوی مرورگر گزینه Add to Home Screen را بزن')};
 if(location.search.indexOf('widget')>=0){document.body.classList.add('widget');try{UI.tab='timer'}catch(e){}document.querySelectorAll('.tabpage').forEach(function(p){p.classList.toggle('on',p.id==='tab-timer')});}
 /* tabs */
