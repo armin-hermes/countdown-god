@@ -195,6 +195,21 @@ main>section:nth-child(5){animation-delay:.24s}
 .toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:14px;left:14px;z-index:100;background:var(--bg2);border:1px solid var(--ac);border-radius:12px;padding:12px 16px;font-size:13.5px;font-weight:600;text-align:center;box-shadow:var(--shadow);animation:tin .3s}
 @keyframes tin{from{transform:translateY(10px);opacity:0}}
 footer{text-align:center;color:var(--tx3);font-size:12px;padding:0 14px 28px}
+/* color themes */
+[data-theme="forest"]{--bg0:#090e0b;--bg1:#0e1511;--bg2:#18241e;--glass:rgba(14,21,17,.72);--tx0:#edf5ee;--tx1:#c2d4c5;--tx2:#7d8f81;--ac:#4ade80;--ac2:#86efac;--acsoft:rgba(74,222,128,.14);--bd:rgba(134,239,172,.16);--bd2:rgba(134,239,172,.08);--mesh1:#14532d;--mesh2:#166534;--mesh3:#052e16}
+[data-theme="sunset"]{--bg0:#120b0d;--bg1:#1a1013;--bg2:#27161c;--glass:rgba(26,16,19,.72);--tx0:#fdf1ec;--tx1:#e8c9bc;--tx2:#a08073;--ac:#fb923c;--ac2:#fdba74;--acsoft:rgba(251,146,60,.14);--bd:rgba(253,186,116,.16);--bd2:rgba(253,186,116,.08);--mesh1:#7c2d12;--mesh2:#9a3412;--mesh3:#431407}
+[data-theme="ocean"]{--bg0:#080d14;--bg1:#0c1320;--bg2:#142130;--glass:rgba(12,19,32,.72);--tx0:#ecf4fd;--tx1:#bcd3e8;--tx2:#7488a0;--ac:#38bdf8;--ac2:#7dd3fc;--acsoft:rgba(56,189,248,.14);--bd:rgba(125,211,252,.16);--bd2:rgba(125,211,252,.08);--mesh1:#0c4a6e;--mesh2:#0369a1;--mesh3:#082f49}
+.themedots{display:flex;gap:10px;margin-top:10px}
+.tdot{width:44px;height:44px;border-radius:50%;border:2px solid var(--bd);cursor:pointer;flex-shrink:0}
+.tdot.on{border-color:var(--tx0);box-shadow:0 0 0 2px var(--bg0),0 0 0 4px var(--tx0)}
+.mchart{width:100%;height:110px;direction:ltr}
+.heat{display:flex;align-items:flex-end;gap:3px;height:64px;direction:ltr;margin-top:8px}
+.heat .h{flex:1;border-radius:4px;background:var(--bg2);border:1px solid var(--bd2);min-height:6px}
+.heat .h.hot{background:var(--ac);border-color:transparent}
+/* widget mode: only timer */
+body.widget main>*:not(.hero){display:none}
+body.widget .topbar>*:not(.brand){display:none}
+body.widget .kpanel{display:none}
 /* zen / focus mode */
 body.zen main>*:not(.hero){opacity:.12;filter:blur(3px);pointer-events:none;user-select:none}
 body.zen .topbar>*:not(.brand){opacity:.25;pointer-events:none}
@@ -352,6 +367,11 @@ main{padding:14px 10px 48px;gap:12px}
 <div id="perSubj"></div>
 <div class="lbl">۷ روز اخیر</div>
 <div class="chart" id="weekChart"></div>
+<div class="lbl">نمودار خطی ۳۰ روز اخیر</div>
+<svg class="mchart" id="monthChart" viewBox="0 0 300 110" preserveAspectRatio="none"></svg>
+<div class="lbl">ساعت‌های طلایی</div>
+<div class="heat" id="heatMap"></div>
+<p class="evmeta" id="goldTx" style="margin-top:6px"></p>
 <div class="lbl">دفترچه نشست‌ها</div>
 <div id="logList"></div>
 </section>
@@ -368,6 +388,20 @@ main{padding:14px 10px 48px;gap:12px}
 <p class="sub">فرمول، نکته، ایده — خودکار ذخیره می‌شود. سنجاق کن بیاد اول.</p>
 <div class="row" style="margin-top:10px"><button class="btn sm" id="addNote" style="min-height:48px">یادداشت تازه</button></div>
 <div class="note-grid" id="noteGrid"></div>
+</section>
+
+<section class="card" aria-label="تم و امکانات">
+<h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> تم و امکانات</h2>
+<p class="lbl">تم رنگی</p>
+<div class="themedots" id="themeDots"></div>
+<p class="lbl">یادآور روزانه</p>
+<div class="row"><input class="inp" id="remTime" type="time" value="21:00" dir="ltr" style="flex:1;max-width:170px"><button class="btn sm" id="remBtn">فعال‌سازی یادآور</button></div>
+<p class="evmeta" id="remState" style="margin-top:6px"></p>
+<p class="lbl">کارنامه ماهانه</p>
+<div class="row"><button class="btn sm" id="monthBtn" style="flex:1">ساخت کارنامه ماه</button><button class="btn sm ghost" id="monthDl">دانلود PNG</button></div>
+<div class="shareprev" id="monthPrev" hidden></div>
+<p class="lbl">نصب و ویجت</p>
+<div class="row"><button class="btn sm" id="installBtn" style="flex:1">نصب اپ روی گوشی</button><a class="btn sm ghost" id="widgetBtn" href="?widget=1">نمای ویجت</a></div>
 </section>
 </main>
 <footer>ساعت مطالعه کنکور • ذخیره‌سازی محلی • Rokh</footer>
@@ -388,7 +422,7 @@ try{JSON.parse(localStorage.getItem(LS_E)||'[]')}catch(e){}
 var PALETTE=['#e5484d','#f76b15','#f5a524','#30a46c','#12a594','#3e9bff','#8e4ec6','#e93d82','#ff7eb6'];
 var OLDG=['#f7f8f8','#d0d6e0','#8a8f98','#62666d'];
 var DEF_SUBJ=['ریاضی','فیزیک','شیمی','زیست‌شناسی','ادبیات فارسی','عربی','زبان انگلیسی','سایر'].map(function(n,i){return{name:n,color:PALETTE[i%PALETTE.length]}});
-var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,focusLen:25,breakLen:5,tmode:'focus',accent:''};
+var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,theme:'',focusLen:25,breakLen:5,tmode:'focus',accent:''};
 try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s,si){var c=s.color||'#3e9bff';if(OLDG.indexOf(c)>=0)c=PALETTE[si%PALETTE.length];return{name:String(s.name).slice(0,30),color:c}})}else if(k in UI||k==='subjects'){}else{continue}if(k!=='subjects')UI[k]=u[k]}}}catch(e){}
 if(!UI.subjects.length)UI.subjects=DEF_SUBJ.slice();
 if(!UI.subjects.some(function(s){return s.name===UI.subject}))UI.subject=UI.subjects[0].name;
@@ -547,7 +581,7 @@ var last=SLOG.map(function(s,idx){return{s:s,idx:idx}}).slice(-15).reverse();
 $('#logList').innerHTML=last.length?last.map(function(x){var s=x.s;var d=new Date(s.ts);var dl=dayKey(s.ts)===tk?'امروز':jal(d);
 return '<div class="lrow"><span class="dot" style="background:'+colorOf(s.subj)+'"></span><b>'+esc(s.subj)+'</b><span class="evmeta">'+fa(minsOf(s))+' دقیقه</span><span style="flex:1"></span><span class="evmeta">'+faPad(d.getHours())+':'+faPad(d.getMinutes())+' • '+dl+'</span><button class="mini del" data-log="'+x.idx+'" title="حذف">'+ic('trash','sm')+'</button></div>'}).join(''):'<div class="empty"><b>دفترچه خالی است</b>نشست‌های تمرکزت اینجا ثبت می‌شوند.</div>';
 var bs=$('#logList').querySelectorAll('[data-log]');for(var j=0;j<bs.length;j++){bs[j].onclick=function(){if(!window.confirm('این نشست حذف شود؟'))return;SLOG.splice(+this.dataset.log,1);saveStudy();renderStats();renderSess();toast('نشست حذف شد')}}
-renderStreak(days);renderSess()}
+renderStreak(days);renderSess();try{renderMonth()}catch(e){}}
 function dayMins(key){return SLOG.filter(function(s){return dayKey(s.ts)===key}).reduce(function(a,s){return a+minsOf(s)},0)}
 function renderStreak(days){
 var arr=[];for(var i=6;i>=0;i--){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);var k=dayKey(d.getTime());arr.push({m:dayMins(k),today:i===0})}
@@ -650,11 +684,32 @@ ti.focus();
 }
 $('#addNote').onclick=function(){NOTES.unshift({t:'',b:'',ts:Date.now(),pin:false,pr:2});saveNotes();renderNotes();startNoteEdit(0);var g=$('#noteGrid');var f=g.querySelector('.note-card');if(f)f.scrollIntoView({behavior:'smooth',block:'center'})};
 renderTodos();renderNotes();
+/* themes */
+var THEMES=[['','پیش‌فرض','linear-gradient(135deg,#08090a,#d0d6e0)'],['forest','جنگل','linear-gradient(135deg,#052e16,#4ade80)'],['sunset','غروب','linear-gradient(135deg,#431407,#fb923c)'],['ocean','اقیانوس','linear-gradient(135deg,#082f49,#38bdf8)']];
+function applyTheme(){var t=UI.theme||'';if(t)document.documentElement.dataset.theme=t;else document.documentElement.removeAttribute('data-theme');var w=$('#themeDots');if(!w)return;w.innerHTML=THEMES.map(function(x){return '<span class="tdot'+((UI.theme||'')===x[0]?' on':'')+'" data-th="'+x[0]+'" title="'+x[1]+'" style="background:'+x[2]+'"></span>'}).join('');var ds=w.querySelectorAll('[data-th]');for(var i=0;i<ds.length;i++){ds[i].onclick=(function(el){return function(){UI.theme=el.dataset.th;saveUI();applyTheme();toast('تم عوض شد')}})(ds[i])}}
+/* monthly line chart + golden hours */
+function last30(){var out=[];for(var i=29;i>=0;i--){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);out.push({d:d,m:dayMins(dayKey(d.getTime()))})}return out}
+function renderMonth(){var arr=last30();var mx=Math.max.apply(null,[10].concat(arr.map(function(x){return x.m})));var pts=arr.map(function(x,i){return (i/(arr.length-1)*296+2).toFixed(1)+','+(106-(x.m/mx*92)).toFixed(1)});var last=pts[pts.length-1].split(',');var el=$('#monthChart');if(el)el.innerHTML='<polyline points="'+pts.join(' ')+'" fill="none" style="stroke:var(--ac)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+last[0]+'" cy="'+last[1]+'" r="4" style="fill:var(--ac)"/>';var hrs=new Array(24).fill(0);SLOG.forEach(function(s){hrs[new Date(s.ts).getHours()]+=minsOf(s)});var ranked=hrs.map(function(m,hh){return{h:hh,m:m}}).filter(function(x){return x.h>=5}).sort(function(a,b){return b.m-a.m});var top=ranked.filter(function(x){return x.m>0}).slice(0,3);var hm=$('#heatMap');if(hm){var mxh=Math.max.apply(null,[1].concat(hrs));hm.innerHTML=hrs.map(function(m,hh){var hot=top.some(function(t){return t.h===hh});return '<div class="h'+(hot?' hot':'')+'" style="height:'+Math.max(8,Math.round(m/mxh*100))+'%" title="'+fa(hh)+' — '+fa(m)+' دقیقه"></div>'}).join('')}var gt=$('#goldTx');if(gt)gt.textContent=top.length?('پر بازده‌ترین ساعت‌ها: '+top.map(function(t){return fa(t.h)+' ('+fa(t.m)+' دقیقه)'}).join(' • ')):'هنوز داده‌ای برای ساعت‌های طلایی نیست'}
+/* smart reminder */
+var REM=null;try{REM=JSON.parse(localStorage.getItem('god.remind.v1')||'{}')}catch(e){REM={}}
+function renderRem(){var s=$('#remState');if(s)s.textContent=(REM&&REM.on)?('یادآور فعال — هر روز ساعت '+fa(REM.time||'21:00')):'یادآور خاموش است';var b=$('#remBtn');if(b)b.textContent=(REM&&REM.on)?'خاموش کردن':'فعال‌سازی یادآور'}
+$('#remBtn').onclick=function(){if(REM&&REM.on){REM.on=false;try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}renderRem();toast('یادآور خاموش شد');return}var t=(($('#remTime')||{}).value)||'21:00';if(!('Notification' in window)){toast('مرورگر اعلان را پشتیبانی نمی‌کند');return}var go=function(){REM={on:true,time:t,notified:''};try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}renderRem();toast('یادآور هر روز ساعت '+fa(t))};if(Notification.permission==='granted')go();else Notification.requestPermission().then(function(p){if(p==='granted')go();else toast('اجازه اعلان داده نشد')})};
+setInterval(function(){try{if(!REM||!REM.on)return;var now=new Date();var hm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');var tk=dayKey(Date.now());if(hm>=(REM.time||'21:00')&&REM.notified!==tk){var tM=SLOG.filter(function(s){return dayKey(s.ts)===tk}).reduce(function(a,s){return a+minsOf(s)},0);if(tM===0){REM.notified=tk;try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}try{new Notification('ساعت مطالعه',{body:'امروز هنوز مطالعه‌ای ثبت نشده — همین حالا شروع کن',dir:'rtl',lang:'fa'})}catch(e){}toast('امروز هنوز مطالعه نکردی — شروع کن')}}}catch(e){}},30000);
+(function(){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-1);if(dayMins(dayKey(d.getTime()))===0&&SLOG.length)setTimeout(function(){toast('دیروز مطالعه‌ای ثبت نشد — امروز جبران کن')},4000)})();
+/* monthly report card */
+function monthReport(){var arr=last30();var total=arr.reduce(function(a,x){return a+x.m},0);var per={};SLOG.forEach(function(s){if((Date.now()-s.ts)/864e5<30)per[s.subj]=(per[s.subj]||0)+minsOf(s)});var top=Object.keys(per).sort(function(a,b){return per[b]-per[a]})[0];var act=arr.filter(function(x){return x.m>0}).length;var lines=['کارنامه ماهانه ساعت مطالعه','———————','جمع ۳۰ روز: '+fa(total)+' دقیقه','روزهای فعال: '+fa(act)+' از ۳۰','میانگین روزانه: '+fa(Math.round(total/30))+' دقیقه'];if(top)lines.push('بیشترین درس: '+top+' ('+fa(per[top])+' دقیقه)');return lines.join('\n')}
+$('#monthBtn').onclick=function(){var p=$('#monthPrev');p.hidden=false;p.textContent=monthReport();p.scrollIntoView({behavior:'smooth',block:'center'});toast('کارنامه ساخته شد')};
+$('#monthDl').onclick=function(){var t=monthReport();var cv=document.createElement('canvas');cv.width=900;cv.height=560;var c=cv.getContext('2d');var dark=document.documentElement.dataset.mode!=='light';c.fillStyle=dark?'#08090a':'#f7f8f8';c.fillRect(0,0,900,560);c.fillStyle=dark?'#f7f8f8':'#08090a';c.font='bold 44px Rokh, Tahoma';c.textAlign='right';c.fillText('کارنامه ماهانه ساعت مطالعه',850,80);c.font='30px Rokh, Tahoma';c.fillStyle=dark?'#d0d6e0':'#34343a';var lines=t.split('\n');var y=150;for(var i=1;i<lines.length;i++){c.fillText(lines[i],850,y);y+=56}var a=document.createElement('a');a.download='month-report.png';a.href=cv.toDataURL('image/png');a.click();toast('تصویر کارنامه دانلود شد')};
+/* PWA install + widget mode */
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=$('#installBtn');if(b)b.textContent='نصب اپ روی گوشی'});
+$('#installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null})}else toast('از منوی مرورگر گزینه Add to Home Screen را بزن')};
+if(location.search.indexOf('widget')>=0)document.body.classList.add('widget');
 /* mode */
 function renderMode(){document.documentElement.dataset.mode=UI.mode;var mb=$('#modeBtn');mb.innerHTML=ic(UI.mode==='dark'?'moon':'sun','sm');var mc=document.querySelector('meta[name="theme-color"]');if(mc)mc.content=UI.mode==='dark'?'#08090a':'#eef0f4'}
 $('#modeBtn').onclick=function(){UI.mode=UI.mode==='dark'?'light':'dark';saveUI();renderMode()};
 /* boot */
-renderMode();renderKonkour();renderChips();renderSubjList();renderTimer();renderStats();
+renderMode();renderKonkour();renderChips();renderSubjList();renderTimer();renderStats();applyTheme();renderRem();
 setInterval(function(){if(!T.running)renderKonkour()},60000);
 })();
 </script>
