@@ -711,9 +711,7 @@ function tickSnd(){
 }
 
 /* timer with focus/break & Konkur presets */
-var FOCUS_PRE=[25,45,50,75,90,115];
-var PRESET_LABELS={25:'پومودورو',45:'تک‌درس',50:'عمیق',75:'عمومی',90:'جامع',115:'اختصاصی'};
-var BREAK_PRE=[5,10,15,20];
+var FOCUS_PRE=[25,50,90],BREAK_PRE=[5,10,15];
 
 var T={total:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,remain:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,running:false,endAt:0,timer:null,lastSec:-1};
 var TITLE='ساعت مطالعه کنکور';
@@ -753,8 +751,7 @@ function renderPresets(){
   var list=isBreak()?BREAK_PRE:FOCUS_PRE;
   var pr=$('#presets');
   pr.innerHTML=list.map(function(p){
-    var tag=PRESET_LABELS[p]?' <small style="font-size:10px;opacity:.8">('+PRESET_LABELS[p]+')</small>':'';
-    return '<button class="chip'+(isBreak()?' brk':'')+(curLen()===p&&T.total===p*60?' on':'')+'" data-p="'+p+'">'+fa(p)+' دقیقه'+tag+'</button>';
+    return '<button class="chip'+(isBreak()?' brk':'')+(curLen()===p&&T.total===p*60?' on':'')+'" data-p="'+p+'">'+fa(p)+' دقیقه</button>';
   }).join('');
   var btns=pr.querySelectorAll('button');
   for(var i=0;i<btns.length;i++){
