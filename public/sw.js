@@ -1,5 +1,5 @@
 /* Study timer offline cache */
-var CACHE = "study-timer-v3";
+var CACHE = "study-timer-v4";
 var CORE = ["./", "./index.html", "./manifest.webmanifest",
   "./fonts/rokh-400.woff2", "./fonts/rokh-500.woff2",
   "./fonts/rokh-700.woff2", "./fonts/rokh-800.woff2",
