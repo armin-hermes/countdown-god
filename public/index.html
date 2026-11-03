@@ -542,9 +542,17 @@ main{padding:14px 10px 48px;gap:12px}
 <p class="lbl">صدای زنگ هشدار پایان زمان</p>
 <div class="row">
 <select class="inp" id="soundTypeSel" style="flex:1">
-<option value="zen">زنگ ناقوس معبد (طنین عمیق و پرانرژی)</option>
-<option value="piano">آکورد آرامش‌بخش پیانو</option>
-<option value="digital">هشدار دیجیتال مدرن</option>
+<option value="school_bell">زنگ مدرسه و آزمون (پرانرژی و رسمی)</option>
+<option value="tibetan_bowl">کاسه تبتی ذن (آرامش‌بخش و تمرکز عمیق)</option>
+<option value="copper_bell">ناقوس مسین معبد (طنین بم و رزونانس بالا)</option>
+<option value="piano">آکورد پیانو گرند (طبیعی و ملایم)</option>
+<option value="marimba">ماریمبا و چایم آکوستیک (انگیزشی و ریتمیک)</option>
+<option value="digital_alarm">ساعت دیجیتال مچی (کاسیو کلاسیک)</option>
+<option value="analog_alarm">ساعت شماطه‌دار مکانیکی (زنگوله‌ای قوی)</option>
+<option value="electronic_chime">چایم الکترونیک مدرن (مینیمال و شیک)</option>
+<option value="music_box">جعبه موسیقی رویایی (نوستالژیک و دلنشین)</option>
+<option value="reception_bell">زنگ رومیزی پذیرش (دینگ کوتاه و شفاف)</option>
+<option value="positive">نوای پیروزی و موفقیت (انرژی‌بخش پایان پارت)</option>
 </select>
 <button class="btn sm pri" id="btnTestSound" style="min-height:48px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> تست زنگ صدا</button>
 </div>
@@ -577,10 +585,11 @@ var PALETTE=['#e5484d','#f76b15','#f5a524','#30a46c','#12a594','#3e9bff','#8e4ec
 var OLDG=['#f7f8f8','#d0d6e0','#8a8f98','#62666d'];
 var DEF_SUBJ=['ریاضی','فیزیک','شیمی','زیست‌شناسی','ادبیات فارسی','عربی','زبان انگلیسی','سایر'].map(function(n,i){return{name:n,color:PALETTE[i%PALETTE.length]}});
 
-var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,soundType:'zen',studentName:'',theme:'',focusLen:25,breakLen:5,tmode:'focus',accent:'',reportPeriod:7};
+var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,soundType:'school_bell',studentName:'',theme:'',focusLen:25,breakLen:5,tmode:'focus',accent:'',reportPeriod:7};
 try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s,si){var c=s.color||'#3e9bff';if(OLDG.indexOf(c)>=0)c=PALETTE[si%PALETTE.length];return{name:String(s.name).slice(0,30),color:c}})}else if(k in UI){UI[k]=u[k]}}}}catch(e){}
 if(!UI.subjects.length)UI.subjects=DEF_SUBJ.slice();
 if(!UI.subjects.some(function(s){return s.name===UI.subject}))UI.subject=UI.subjects[0].name;
+if(UI.soundType==='zen')UI.soundType='tibetan_bowl';if(UI.soundType==='digital')UI.soundType='digital_alarm';
 UI.focusLen=Math.min(240,Math.max(1,+UI.focusLen||25));
 UI.breakLen=Math.min(60,Math.max(1,+UI.breakLen||5));
 if(UI.tmode!=='focus'&&UI.tmode!=='break')UI.tmode='focus';
@@ -617,97 +626,87 @@ tgt:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="
 function ic(n,cls){return '<svg class="ic '+(cls||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(P[n]||P.flag)+'</svg>'}
 function toast(m){var b=$('#toastBox');b.innerHTML='<div class="toast">'+esc(m)+'</div>';clearTimeout(b._t);b._t=setTimeout(function(){b.innerHTML=''},3000)}
 
-/* Advanced Web Audio Sound Engine */
-var AC=null;
-function getAudioContext(){
-  try{
-    if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
-    if(AC.state==='suspended')AC.resume();
-    return AC;
-  }catch(e){return null}
+/* High-Quality Real Audio Sound Engine */
+var AUDIO_CACHE={};
+var SOUND_MAP={
+  school_bell:'sounds/school_bell.mp3',
+  tibetan_bowl:'sounds/tibetan_bowl.mp3',
+  copper_bell:'sounds/copper_bell.mp3',
+  piano:'sounds/piano.mp3',
+  marimba:'sounds/marimba.mp3',
+  digital_alarm:'sounds/digital_alarm.mp3',
+  analog_alarm:'sounds/analog_alarm.mp3',
+  electronic_chime:'sounds/electronic_chime.mp3',
+  music_box:'sounds/music_box.mp3',
+  reception_bell:'sounds/reception_bell.mp3',
+  positive:'sounds/positive.mp3',
+  break_chime:'sounds/break_chime.mp3'
+};
+
+function getSoundUrl(type){
+  if(type==='zen')return SOUND_MAP.tibetan_bowl;
+  if(type==='digital')return SOUND_MAP.digital_alarm;
+  if(SOUND_MAP[type])return SOUND_MAP[type];
+  return SOUND_MAP.school_bell;
 }
 
-// User-gesture resume
+function playAudioFile(url,vol){
+  try{
+    var a=AUDIO_CACHE[url];
+    if(!a){
+      a=new Audio(url);
+      AUDIO_CACHE[url]=a;
+    }
+    a.currentTime=0;
+    a.volume=(vol!=null)?vol:1.0;
+    var p=a.play();
+    if(p&&p.catch){
+      p.catch(function(){
+        try{
+          var a2=new Audio(url);
+          a2.volume=(vol!=null)?vol:1.0;
+          a2.play().catch(function(){});
+        }catch(e){}
+      });
+    }
+  }catch(e){}
+}
+
+// User-gesture audio unlock & pre-instantiation
 ['click','touchstart','keydown'].forEach(function(evt){
   document.addEventListener(evt,function(){
-    if(AC&&AC.state==='suspended')AC.resume();
-  },{once:false,passive:true});
+    if(!AUDIO_CACHE._unlocked){
+      AUDIO_CACHE._unlocked=true;
+      for(var k in SOUND_MAP){
+        if(!AUDIO_CACHE[SOUND_MAP[k]]){
+          var a=new Audio();
+          a.preload='auto';
+          a.src=SOUND_MAP[k];
+          AUDIO_CACHE[SOUND_MAP[k]]=a;
+        }
+      }
+    }
+  },{once:true,passive:true});
 });
 
 function playChime(kind){
   if(UI.sound===false)return;
-  var c=getAudioContext();
-  if(!c)return;
   try{
-    var now=c.currentTime;
-    var st=UI.soundType||'zen';
     if(kind==='break'){
-      // Ascending cheerful chime for break completion
-      [587.33,783.99,1046.50].forEach(function(f,i){
-        var o=c.createOscillator(),g=c.createGain();
-        o.type='sine';
-        o.frequency.setValueAtTime(f,now+i*0.18);
-        g.gain.setValueAtTime(0.001,now+i*0.18);
-        g.gain.exponentialRampToValueAtTime(0.35,now+i*0.18+0.03);
-        g.gain.exponentialRampToValueAtTime(0.0001,now+i*0.18+0.75);
-        o.connect(g);g.connect(c.destination);
-        o.start(now+i*0.18);o.stop(now+i*0.18+0.8);
-      });
+      playAudioFile(SOUND_MAP.break_chime);
     }else{
-      // Focus completion alarm
-      if(st==='digital'){
-        [880,0,880,0,1320,1760].forEach(function(f,i){
-          if(!f)return;
-          var o=c.createOscillator(),g=c.createGain();
-          o.type='square';
-          o.frequency.setValueAtTime(f,now+i*0.13);
-          g.gain.setValueAtTime(0.001,now+i*0.13);
-          g.gain.linearRampToValueAtTime(0.18,now+i*0.13+0.01);
-          g.gain.exponentialRampToValueAtTime(0.001,now+i*0.13+0.1);
-          o.connect(g);g.connect(c.destination);
-          o.start(now+i*0.13);o.stop(now+i*0.13+0.11);
-        });
-      }else if(st==='piano'){
-        [523.25,659.25,783.99,1046.50].forEach(function(f,i){
-          var o=c.createOscillator(),g=c.createGain();
-          o.type='triangle';
-          o.frequency.setValueAtTime(f,now+i*0.06);
-          g.gain.setValueAtTime(0.001,now+i*0.06);
-          g.gain.linearRampToValueAtTime(0.32,now+i*0.06+0.03);
-          g.gain.exponentialRampToValueAtTime(0.0001,now+i*0.06+2.0);
-          o.connect(g);g.connect(c.destination);
-          o.start(now+i*0.06);o.stop(now+i*0.06+2.1);
-        });
-      }else{
-        // 'zen' - Tibetan Singing Bowl Bell (4 natural harmonics)
-        [{f:523.25,g:0.5},{f:783.99,g:0.35},{f:1046.50,g:0.25},{f:1318.51,g:0.15}].forEach(function(h){
-          var o=c.createOscillator(),g=c.createGain();
-          o.type='sine';
-          o.frequency.setValueAtTime(h.f,now);
-          g.gain.setValueAtTime(0.001,now);
-          g.gain.exponentialRampToValueAtTime(h.g,now+0.02);
-          g.gain.exponentialRampToValueAtTime(0.0001,now+2.7);
-          o.connect(g);g.connect(c.destination);
-          o.start(now);o.stop(now+2.75);
-        });
-      }
+      var st=UI.soundType||'school_bell';
+      playAudioFile(getSoundUrl(st));
     }
-    if('vibrate' in navigator){try{navigator.vibrate([300,150,300,150,600])}catch(ve){}}
+    if('vibrate' in navigator){
+      try{navigator.vibrate([300,150,300,150,600])}catch(ve){}
+    }
   }catch(e){}
 }
 
 function tickSnd(){
   if(UI.sound===false)return;
-  var c=getAudioContext();if(!c)return;
-  try{
-    var now=c.currentTime,o=c.createOscillator(),g=c.createGain();
-    o.type='sine';o.frequency.setValueAtTime(800,now);
-    g.gain.setValueAtTime(0.001,now);
-    g.gain.linearRampToValueAtTime(0.1,now+0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001,now+0.07);
-    o.connect(g);g.connect(c.destination);
-    o.start(now);o.stop(now+0.08);
-  }catch(e){}
+  playAudioFile(SOUND_MAP.reception_bell,0.25);
 }
 
 /* timer with focus/break & Konkur presets */
@@ -1366,7 +1365,10 @@ $('#repCopyBtn').onclick=copyReportText;
 // Sound & student name settings in tab-more
 var sndSel=$('#soundTypeSel');
 if(sndSel){
-  sndSel.value=UI.soundType||'zen';
+  var curSt=UI.soundType||'school_bell';
+  if(curSt==='zen')curSt='tibetan_bowl';
+  if(curSt==='digital')curSt='digital_alarm';
+  sndSel.value=curSt;
   sndSel.onchange=function(){UI.soundType=this.value;saveUI();playChime('focus');toast('نوع زنگ تغییر کرد')}
 }
 var bTestSnd=$('#btnTestSound');

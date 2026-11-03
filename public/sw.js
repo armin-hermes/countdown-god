@@ -1,9 +1,17 @@
 /* Study timer offline cache */
-var CACHE = "study-timer-v5";
-var CORE = ["./", "./index.html", "./manifest.webmanifest",
+var CACHE = "study-timer-v6";
+var CORE = [
+  "./", "./index.html", "./manifest.webmanifest",
   "./fonts/rokh-400.woff2", "./fonts/rokh-500.woff2",
   "./fonts/rokh-700.woff2", "./fonts/rokh-800.woff2",
-  "./fonts/rokh-900.woff2", "./icons/icon-192.png", "./icons/icon-512.png"];
+  "./fonts/rokh-900.woff2", "./icons/icon-192.png", "./icons/icon-512.png",
+  "./sounds/school_bell.mp3", "./sounds/digital_alarm.mp3",
+  "./sounds/copper_bell.mp3", "./sounds/tibetan_bowl.mp3",
+  "./sounds/piano.mp3", "./sounds/marimba.mp3",
+  "./sounds/electronic_chime.mp3", "./sounds/music_box.mp3",
+  "./sounds/reception_bell.mp3", "./sounds/analog_alarm.mp3",
+  "./sounds/positive.mp3", "./sounds/break_chime.mp3"
+];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(CORE); })
     .then(function () { return self.skipWaiting(); }));
