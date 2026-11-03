@@ -627,6 +627,7 @@ function ic(n,cls){return '<svg class="ic '+(cls||'')+'" viewBox="0 0 24 24" fil
 function toast(m){var b=$('#toastBox');b.innerHTML='<div class="toast">'+esc(m)+'</div>';clearTimeout(b._t);b._t=setTimeout(function(){b.innerHTML=''},3000)}
 
 /* High-Quality Real Audio Sound Engine */
+function getAudioContext(){return null}
 var AUDIO_CACHE={};
 var SOUND_MAP={
   school_bell:'sounds/school_bell.mp3',
@@ -800,7 +801,6 @@ function tickFn(){
 function startT(){
   if(T.running)return;
   if(T.remain<=0){T.remain=T.total;T.lastSec=-1}
-  getAudioContext();
   T.running=true;
   T.endAt=Date.now()+T.remain*1000;
   clearInterval(T.timer);
