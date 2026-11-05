@@ -229,6 +229,22 @@ body.widget main{padding:10px}
 .planrow{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--bd2);flex-wrap:wrap}
 .planrow:last-child{border-bottom:none}
 .planrow .nm{font-size:13.5px;font-weight:700;flex:1;min-width:110px}
+.planrow .remain{font-size:11.5px;font-weight:800;border-radius:99px;padding:2px 10px;border:1px solid var(--bd);color:var(--tx1);white-space:nowrap}
+.planrow .remain.done{background:#30a46c;color:#fff;border-color:transparent}
+.plangroup{margin-top:12px;border:1px solid var(--bd2);border-radius:13px;padding:10px 12px 4px;background:var(--bg0)}
+.plangroup .pg-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.plangroup .pg-head .nm{font-size:13.5px;font-weight:800}
+.plangroup .pg-head .evmeta{font-variant-numeric:tabular-nums}
+.plangroup .bar{flex:1 1 100%;margin:2px 0 4px}
+.syncbox{border:1px dashed var(--bd);border-radius:12px;padding:10px 13px;margin-top:10px;font-size:12.5px;color:var(--tx1);line-height:1.9}
+.syncbox b{color:var(--tx0)}
+/* dots that JS renders (were missing styles) */
+.cdot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:inline-block;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.sdot{width:10px;height:10px;border-radius:50%;background:var(--bg2);border:1px solid var(--bd);display:inline-block}
+.sdot.on{background:var(--tx0);border-color:transparent}
+.accdot{width:38px;height:38px;border-radius:50%;border:2px solid var(--bd);cursor:pointer;flex-shrink:0;display:inline-block}
+.accdot.on{border-color:var(--tx0);box-shadow:0 0 0 2px var(--bg0),0 0 0 4px var(--tx0)}
+.sp{flex:1}
 .succring{position:relative;width:120px;height:120px;margin:10px auto}
 .succring svg{transform:rotate(-90deg)}
 .succring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:22px}
@@ -429,8 +445,9 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="tabpage" id="tab-plan">
 <section class="card" aria-label="برنامه هفتگی">
 <h2>برنامه هفتگی</h2>
-<p class="sub">برای هر روز هفته بنویس چیکار می‌کنی؛ انجام که شد تیک بزن تا درصد موفقیتت حساب بشه.</p>
-<div class="planform" style="margin-top:10px"><select class="inp" id="planDay"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><input class="inp" id="planSubj" placeholder="نام درس" maxlength="30"><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr"><input class="inp" id="planNote" placeholder="توضیح (اختیاری) — مثلا فصل ۳ تا ۵" maxlength="80"><button class="btn sm" id="planAdd">افزودن</button></div>
+<p class="sub">برای هر درس می‌تونی چند تا تسک جدا ست کنی (مثلا ریاضی: «درسنامه فصل ۳» ۵۰ دقیقه + «تست‌زنی» ۴۰ دقیقه). تایمر و برنامه کاملا سینکن: هر دقیقه‌ای که با تایمر روی یک درس مطالعه کنی، خودکار از تسک‌های همون درس در همون روز کم می‌شه — اول تسک‌های زودتر پر می‌شن و بعد نوبت تسک بعدی می‌رسه.</p>
+<div class="syncbox" id="planSyncInfo"></div>
+<div class="planform" style="margin-top:10px"><select class="inp" id="planDay"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><select class="inp" id="planSubj" aria-label="درس"></select><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr"><input class="inp" id="planNote" placeholder="عنوان تسک — مثلا فصل ۳ تا ۵، تست‌زنی، مرور" maxlength="80"><button class="btn sm" id="planAdd">افزودن تسک</button></div>
 <div class="seg" id="planDayFilter" style="margin-top:10px"><button data-wd="all" class="on">کل هفته</button><button data-wd="6">شنبه</button><button data-wd="0">یکشنبه</button><button data-wd="1">دوشنبه</button><button data-wd="2">سه‌شنبه</button><button data-wd="3">چهارشنبه</button><button data-wd="4">پنجشنبه</button><button data-wd="5">جمعه</button></div>
 <div id="planList" style="margin-top:6px"></div>
 <div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">۰٪</span><small style="font-size:11px;color:var(--tx2);font-weight:600" id="succLbl">موفقیت هفته</small></div></div>
@@ -571,7 +588,7 @@ main{padding:14px 10px 48px;gap:12px}
 (function(){
 'use strict';
 var $=function(s){return document.querySelector(s)};
-var FA='0123456789';
+var FA='۰۱۲۳۴۵۶۷۸۹';
 var fa=function(v){return String(v).replace(/\d/g,function(d){return FA[d]})};
 var faPad=function(n){n=Math.max(0,Math.floor(n));return fa(String(n).padStart(2,'0'))};
 var en=function(v){return String(v==null?'':v).replace(/[۰-۹]/g,function(d){return FA.indexOf(d)})};
@@ -893,7 +910,22 @@ function renderChips(){
 }
 
 function selectSubject(n){
-  if(!n)return;UI.subject=n;saveUI();
+  if(!n||n===UI.subject){if(n){renderChips();renderTimer();renderSubjList()}return}
+  /* switching subject mid-session: log the elapsed part under the OLD subject
+     first, so study minutes never land on the wrong subject / plan task */
+  if(!isBreak()&&(T.running||T.remain<T.total)){
+    var remNow=T.running?Math.max(0,(T.endAt-Date.now())/1000):T.remain;
+    var elapsed=T.total-remNow;
+    T.running=false;clearInterval(T.timer);
+    if(elapsed>=60){
+      var m=Math.max(1,Math.round(elapsed/60));
+      SLOG.push({subj:UI.subject,mins:m,ts:Date.now()});
+      saveStudy();renderStats();
+      toast('نشست '+UI.subject+' ('+fa(m)+' دقیقه) ثبت شد — حالا '+n);
+    }
+    T.total=curLen()*60;T.remain=T.total;T.lastSec=-1;
+  }
+  UI.subject=n;saveUI();
   renderChips();renderTimer();renderSubjList();
 }
 
@@ -919,6 +951,7 @@ function renderSubjList(){
   each('data-cdot',function(el){var i=+el.dataset.cdot,s=UI.subjects[i];var pi=(PALETTE.indexOf(s.color)+1+PALETTE.length)%PALETTE.length;s.color=PALETTE[pi];saveUI();renderChips();renderSubjList();renderStats()});
   each('data-ren',function(el){startRename(+el.dataset.ren)});
   each('data-del',function(el){delSubj(+el.dataset.del)});
+  try{if(typeof renderPlanSubjects==='function')renderPlanSubjects()}catch(e){}
 }
 
 function startRename(i){
@@ -932,6 +965,7 @@ function startRename(i){
       var old=s.name;s.name=v;
       if(UI.subject===old)UI.subject=v;
       SLOG.forEach(function(x){if(x.subj===old)x.subj=v});
+      if(typeof PLAN!=='undefined'&&Array.isArray(PLAN)){var pc=false;PLAN.forEach(function(p){if(p.subj===old){p.subj=v;pc=true}});if(pc&&typeof savePlan==='function')savePlan()}
       saveStudy();saveUI();renderChips();renderSubjList();renderTimer();renderStats();
     }else{renderSubjList()}
   }
@@ -943,8 +977,10 @@ function startRename(i){
 function delSubj(i){
   var s=UI.subjects[i];if(!s)return;
   if(UI.subjects.length<=1){toast('حداقل یک درس لازم است');return}
-  if(!window.confirm('درس «'+s.name+'» حذف شود؟'))return;
+  var planCount=(typeof PLAN!=='undefined'&&Array.isArray(PLAN))?PLAN.filter(function(p){return p.subj===s.name}).length:0;
+  if(!window.confirm('درس «'+s.name+'» حذف شود؟'+(planCount?(' '+fa(planCount)+' تسک برنامه هفتگی این درس هم حذف می‌شود.'):'')))return;
   UI.subjects.splice(i,1);
+  if(typeof PLAN!=='undefined'&&Array.isArray(PLAN)&&planCount){for(var pi=PLAN.length-1;pi>=0;pi--){if(PLAN[pi].subj===s.name)PLAN.splice(pi,1)}if(typeof savePlan==='function')savePlan();if(typeof renderPlan==='function')renderPlan()}
   if(UI.subject===s.name)UI.subject=UI.subjects[0].name;
   saveUI();renderChips();renderSubjList();renderTimer();renderStats();
   toast('«'+s.name+'» حذف شد');
@@ -1391,7 +1427,7 @@ $('#goalSave').onclick=saveGoal;
 $('#goalInp').addEventListener('keydown',function(e){if(e.key==='Enter')saveGoal()});
 
 /* accent picker + confetti burst */
-var ACCENTS=[];
+var ACCENTS=[['#e5484d','#ff6369','قرمز'],['#f76b15','#ffa25e','نارنجی'],['#30a46c','#4cc38a','سبز'],['#3e9bff','#70b8ff','آبی'],['#8e4ec6','#b98ae0','بنفش'],['#e93d82','#ff7eb6','صورتی']];
 function hexToSoft(hex){var h=hex.replace('#','');var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return 'rgba('+r+','+g+','+b+',.14)'}
 function applyAccent(){
   var a=null;for(var i=0;i<ACCENTS.length;i++){if(ACCENTS[i][0]===UI.accent)a=ACCENTS[i]}
@@ -1548,55 +1584,135 @@ function showTab(t){
   }
 })();
 
-/* daily planner */
+/* weekly planner — multi-task per subject + auto-sync with the timer.
+   Each PLAN entry is ONE task: {wd, day, subj, goal, note(title), done, ts}.
+   Several tasks may share the same (weekday, subject).
+   Sync rule: minutes studied with the timer on a subject, on the calendar
+   date of that weekday in the CURRENT week (Sat..Fri), are allocated to
+   that subject's tasks for that day in creation order (FIFO) — so studying
+   50 min of math automatically deducts 50 min from math's plan tasks. */
 var PLAN=[];try{PLAN=JSON.parse(localStorage.getItem('god.plan.v1')||'[]');if(!Array.isArray(PLAN))PLAN=[]}catch(e){PLAN=[]}
-function savePlan(){try{localStorage.setItem('god.plan.v1',JSON.stringify(PLAN.slice(-60)))}catch(e){}}
+function savePlan(){try{localStorage.setItem('god.plan.v1',JSON.stringify(PLAN.slice(-300)))}catch(e){}}
 var WD=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
 function planDayName(wd){return WD[+wd]||''}
-function planDayLabel(p){if(p.wd==null||p.wd==='')return planKey();return planDayName(p.wd)}
-function planDoneFor(p){if(p.day){var m=0;SLOG.forEach(function(s){if(dayKey(s.ts)===p.day&&s.subj===p.subj)m+=minsOf(s)});return m}return p.done?999999:0}
+function planDayLabel(p){if(p.wd==null||p.wd==='')return 'روز نامشخص';return planDayName(p.wd)}
+function parseDayKey(k){var p=String(k||'').split('-');if(p.length!==3)return null;var d=new Date(+p[0],+p[1],+p[2],12,0,0,0);return isNaN(d)?null:d}
+/* calendar date (this week, Saturday-first) that a weekly entry belongs to */
+function planDateFor(p){
+  if(p.day){var pd=parseDayKey(p.day);if(pd)return pd}
+  var today=new Date();today.setHours(12,0,0,0);
+  var targetIran=((+p.wd||0)+1)%7; /* JS day -> Sat=0..Fri=6 */
+  var todayIran=(today.getDay()+1)%7;
+  var d=new Date(today);d.setDate(d.getDate()+(targetIran-todayIran));return d;
+}
+function planDateKey(p){return dayKey(planDateFor(p).getTime())}
+function planStudiedOn(dateKeyVal,subj){var m=0;SLOG.forEach(function(s){if(dayKey(s.ts)===dateKeyVal&&s.subj===subj)m+=minsOf(s)});return m}
+/* FIFO allocation of studied minutes across a (date, subject) task group.
+   Returns {idx: allocatedMinutes} for every plan index. */
+function planAllocations(){
+  var groups={};
+  PLAN.forEach(function(p,i){var key=planDateKey(p)+'|'+p.subj;(groups[key]=groups[key]||[]).push(i)});
+  var alloc={};
+  Object.keys(groups).forEach(function(key){
+    var idxs=groups[key].slice().sort(function(a,b){return (PLAN[a].ts||0)-(PLAN[b].ts||0)});
+    var pool=planStudiedOn(planDateKey(PLAN[idxs[0]]),PLAN[idxs[0]].subj);
+    idxs.forEach(function(i){
+      var take=Math.min(PLAN[i].goal,Math.max(0,pool));
+      alloc[i]=take;pool-=take;
+    });
+  });
+  return alloc;
+}
+/* effective done minutes for one task: timer allocation, or full goal when
+   the user ticked it manually */
+function planDoneFor(p,i,alloc){
+  var a=alloc&&typeof alloc[i]==='number'?alloc[i]:0;
+  return p.done?Math.max(p.goal,a):a;
+}
 var PLANFILTER='all';
-function planKey(){var d=new Date();return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()}
+
+function renderPlanSubjects(){
+  var sel=$('#planSubj');if(!sel)return;
+  var cur=sel.value||UI.subject;
+  sel.innerHTML=UI.subjects.map(function(s){return '<option value="'+esc(s.name)+'">'+esc(s.name)+'</option>'}).join('');
+  sel.value=UI.subjects.some(function(s){return s.name===cur})?cur:UI.subject;
+}
 
 function planAdd(){
-  var s=($('#planSubj')||{}).value||'';s=s.trim().slice(0,30);
+  var s=($('#planSubj')||{}).value||'';s=String(s).trim().slice(0,30);
   var m=parseInt(en((($('#planMins')||{}).value)||''),10);
   var nt=(($('#planNote')||{}).value||'').trim().slice(0,80);
   var wd=(($('#planDay')||{}).value||'');
-  if(wd==='')wd=String((new Date().getDay()+1)%7);
-  if(!s){toast('نام درس را بنویس');return}
+  if(wd==='')wd=String(new Date().getDay());
+  if(!s){toast('اول یک درس بساز یا انتخاب کن');return}
   if(!(m>=5&&m<=960)){toast('دقیقه باید بین ۵ تا ۹۶۰ باشد');return}
-  if(PLAN.some(function(p){return String(p.wd)===String(wd)&&p.subj===s})){toast('این درس این روز هست');return}
+  /* multi-task is allowed — only an exact duplicate (same day+subject+title+minutes) is blocked */
+  if(nt&&PLAN.some(function(p){return String(p.wd)===String(wd)&&p.subj===s&&p.note===nt&&p.goal===m})){toast('همین تسک با همین عنوان و زمان هست');return}
   PLAN.push({wd:String(wd),day:'',subj:s,goal:m,note:nt,done:false,ts:Date.now()});
-  savePlan();$('#planSubj').value='';$('#planMins').value='';$('#planNote').value='';
-  renderPlan();toast('به برنامه '+planDayName(wd)+' اضافه شد');
+  savePlan();$('#planMins').value='';$('#planNote').value='';
+  renderPlan();toast('تسک «'+(nt||s)+'» به برنامه '+planDayName(wd)+' اضافه شد');
 }
 
 function planDel(i){PLAN.splice(i,1);savePlan();renderPlan()}
 
 function renderPlan(){
   var w=$('#planList');if(!w)return;
+  renderPlanSubjects();
+  var alloc=planAllocations();
   var arr=PLAN.map(function(p,i){return{p:p,i:i}}).filter(function(x){return PLANFILTER==='all'||String(x.p.wd)===String(PLANFILTER)});
-  var totG=0,totD=0;
-  arr.forEach(function(x){totG+=1;var dn=planDoneFor(x.p);if(dn>=x.p.goal||x.p.done)totD+=1});
-  if(!arr.length){w.innerHTML='<div class="empty"><b>برنامه‌ای نیست</b>بالا برای هر روز هفته بنویس چیکار می‌کنی.</div>'}
+  /* today's auto-sync summary box */
+  var sb=$('#planSyncInfo');
+  if(sb){
+    var tk=dayKey(Date.now());var twd=String(new Date().getDay());
+    var tMins=SLOG.filter(function(s){return dayKey(s.ts)===tk}).reduce(function(a,s){return a+minsOf(s)},0);
+    var tTasks=PLAN.filter(function(p){return planDateKey(p)===tk});
+    var tGoal=tTasks.reduce(function(a,p){return a+p.goal},0);
+    var tDone=tTasks.reduce(function(a,p){var ix=PLAN.indexOf(p);return a+Math.min(p.goal,planDoneFor(p,ix,alloc))},0);
+    sb.innerHTML='<b>سینک زنده با تایمر — امروز ('+planDayName(twd)+'):</b> '+fa(tMins)+' دقیقه مطالعه ثبت شده'+(tGoal?('؛ از برنامه امروز '+fa(tDone)+' از '+fa(tGoal)+' دقیقه خودکار کم شده و '+fa(Math.max(0,tGoal-tDone))+' دقیقه مانده است.'):'؛ برای امروز هنوز تسکی در برنامه ثبت نشده است.');
+  }
+  var totTasks=0,doneTasks=0,totGoal=0,totDone=0;
+  arr.forEach(function(x){var dn=Math.min(x.p.goal,planDoneFor(x.p,x.i,alloc));totTasks+=1;totGoal+=x.p.goal;totDone+=dn;if(dn>=x.p.goal)doneTasks+=1});
+  if(!arr.length){w.innerHTML='<div class="empty"><b>برنامه‌ای نیست</b>بالا برای هر روز و هر درس، چند تسک جدا بنویس؛ تایمر خودش انجام‌شده‌ها را کم می‌کند.</div>'}
   else{
-    w.innerHTML=arr.map(function(x){
-      var p=x.p;var dn=planDoneFor(p);
-      var pct=Math.min(100,Math.round(dn/p.goal*100));
-      var ok=dn>=p.goal||p.done;
-      return '<div class="planrow'+(ok?' done':'')+'"><span class="tickbox'+(ok?' on':'')+'" data-ptick="'+x.i+'" style="'+(ok?'background:var(--tx0);border-color:var(--tx0);color:var(--bg0)':'')+'">'+ic('check','sm')+'</span><span class="dot" style="background:'+colorOf(p.subj)+'"></span><span class="nm">'+esc(p.subj)+' <span class="badge" style="font-size:10px;padding:1px 9px">'+planDayLabel(p)+'</span>'+(p.note?' <small style="color:var(--tx2);font-weight:400">• '+esc(p.note)+'</small>':'')+'</span><span class="evmeta">'+fa(Math.min(dn,p.goal))+' از '+fa(p.goal)+' دقیقه</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'')+'"></i></div><button class="mini del" data-pdel="'+x.i+'" title="حذف">'+ic('trash','sm')+'</button></div>';
+    /* group tasks by (weekday, subject), tasks inside a group in creation order */
+    var gorder=[],gmap={};
+    arr.slice().sort(function(a,b){return (a.p.ts||0)-(b.p.ts||0)}).forEach(function(x){
+      var gk=String(x.p.wd)+'|'+x.p.subj;
+      if(!gmap[gk]){gmap[gk]={wd:x.p.wd,subj:x.p.subj,items:[]};gorder.push(gk)}
+      gmap[gk].items.push(x);
+    });
+    gorder.sort(function(a,b){var ga=gmap[a],gb=gmap[b];var ia=((+ga.wd||0)+1)%7,ib=((+gb.wd||0)+1)%7;if(ia!==ib)return ia-ib;return ga.subj<gb.subj?-1:1});
+    w.innerHTML=gorder.map(function(gk){
+      var g=gmap[gk];
+      var gGoal=g.items.reduce(function(a,x){return a+x.p.goal},0);
+      var gDone=g.items.reduce(function(a,x){return a+Math.min(x.p.goal,planDoneFor(x.p,x.i,alloc))},0);
+      var gPct=gGoal?Math.min(100,Math.round(gDone/gGoal*100)):0;
+      var gOk=gDone>=gGoal;
+      var head='<div class="plangroup"><div class="pg-head"><span class="dot" style="background:'+colorOf(g.subj)+'"></span><span class="nm">'+esc(g.subj)+'</span><span class="badge" style="font-size:10px;padding:1px 9px">'+planDayName(g.wd)+'</span><span class="evmeta">'+fa(g.items.length)+' تسک • '+fa(gDone)+' از '+fa(gGoal)+' دقیقه'+(gOk?' • کامل شد ✓':' • '+fa(gGoal-gDone)+' دقیقه مانده')+'</span></div><div class="bar"><i style="width:'+gPct+'%;'+(gOk?'background:#30a46c':'background:'+colorOf(g.subj))+'"></i></div>';
+      var rows=g.items.map(function(x){
+        var p=x.p;var dn=Math.min(p.goal,planDoneFor(p,x.i,alloc));
+        var pct=p.goal?Math.min(100,Math.round(dn/p.goal*100)):0;
+        var ok=dn>=p.goal;
+        var remain=p.goal-dn;
+        return '<div class="planrow'+(ok?' done':'')+'"><span class="tickbox'+(ok?' on':'')+'" data-ptick="'+x.i+'" title="تیک دستی" style="'+(ok?'background:var(--tx0);border-color:var(--tx0);color:var(--bg0)':'')+'">'+ic('check','sm')+'</span><span class="nm">'+(p.note?esc(p.note):'<span style="color:var(--tx2)">تسک بدون عنوان</span>')+'</span><span class="evmeta">'+fa(dn)+' از '+fa(p.goal)+' دقیقه</span><span class="remain'+(ok?' done':'')+'">'+(ok?'کامل شد ✓':fa(remain)+' دقیقه مانده')+'</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'background:'+colorOf(p.subj))+'"></i></div><button class="mini del" data-pdel="'+x.i+'" title="حذف تسک">'+ic('trash','sm')+'</button></div>';
+      }).join('');
+      return head+rows+'</div>';
     }).join('');
     var bs=w.querySelectorAll('[data-pdel]');for(var j=0;j<bs.length;j++){bs[j].onclick=(function(el){return function(e){e.stopPropagation();planDel(+el.dataset.pdel)}})(bs[j])}
-    var ts=w.querySelectorAll('[data-ptick]');for(var k=0;k<ts.length;k++){ts[k].onclick=(function(el){return function(){var p=PLAN[+el.dataset.ptick];p.done=!p.done;savePlan();renderPlan();toast(p.done?'انجام شد':'برگشت به باز')}})(ts[k])}
+    var ts2=w.querySelectorAll('[data-ptick]');for(var k=0;k<ts2.length;k++){ts2[k].onclick=(function(el){return function(){var p=PLAN[+el.dataset.ptick];p.done=!p.done;savePlan();renderPlan();toast(p.done?'دستی تیک خورد — انجام‌شده حساب شد':'تیک دستی برداشته شد؛ فقط تایمر حساب می‌شود')}})(ts2[k])}
   }
-  var pct=totG?Math.round(totD/totG*100):0;
+  var pct=totGoal?Math.round(totDone/totGoal*100):0;
   var ring=$('#succRing');if(ring)ring.hidden=!arr.length;
   var arc=$('#succArc');if(arc)arc.style.strokeDashoffset=String(326.7*(1-pct/100));
   var sp=$('#succPct');if(sp)sp.textContent=fa(pct)+'٪';
+  var sl=$('#succLbl');if(sl)sl.textContent=PLANFILTER==='all'?'موفقیت هفته (دقیقه‌ای)':'موفقیت این روز (دقیقه‌ای)';
+  var stx=$('#succTx');if(stx)stx.textContent=arr.length?(fa(doneTasks)+' از '+fa(totTasks)+' تسک کامل شده • '+fa(totDone)+' از '+fa(totGoal)+' دقیقه انجام شده • '+fa(Math.max(0,totGoal-totDone))+' دقیقه مانده'):'';
 }
 $('#planAdd').onclick=planAdd;
 $('#planNote').addEventListener('keydown',function(e){if(e.key==='Enter')planAdd()});
+$('#planMins').addEventListener('keydown',function(e){if(e.key==='Enter')planAdd()});
+/* default the form to today + the timer's current subject */
+(function(){var pd=$('#planDay');if(pd)pd.value=String(new Date().getDay())})();
 
 (function(){
   var bs=document.querySelectorAll('#planDayFilter [data-wd]');
@@ -1611,13 +1727,14 @@ $('#planNote').addEventListener('keydown',function(e){if(e.key==='Enter')planAdd
   }
 })();
 
-// Migrate old daily plans
+// Migrate old daily plans: weekday is the JS getDay() of their date.
+// (The old migration used (getDay()+1)%7, which shifted every entry by a day.)
 (function(){
   var ch=false;
   PLAN.forEach(function(p){
     if(p.wd==null||p.wd===''){
-      try{var d=p.day?new Date(p.day):new Date(p.ts);p.wd=String((d.getDay()+1)%7)}
-      catch(e){p.wd=String((new Date().getDay()+1)%7)}
+      var d=parseDayKey(p.day)||(p.ts?new Date(p.ts):new Date());
+      p.wd=String(d.getDay());
       ch=true;
     }
   });
