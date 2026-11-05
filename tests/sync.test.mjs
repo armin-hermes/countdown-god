@@ -25,7 +25,7 @@ const wdTomorrow = String(new Date(Date.now()+864e5).getDay());
   assert.ok(list.includes(fa(50)+' از '+fa(70)), 'math group header: 50 of 70');
   const sync = qs('#planSyncInfo').innerHTML;
   assert.ok(sync.includes(fa(70)+' دقیقه مطالعه'), 'sync box shows today total 70');
-  assert.strictEqual(qs('#succPct').textContent, fa(32)+'٪', 'weekly success is minute-based: 70/220 = 32%');
+  assert.strictEqual(qs('#succPct').textContent, fa(32)+'%', 'weekly success is minute-based: 70/220 = 32%');
 
   // add a 3rd math task for today -> allowed (multi-task), gets 0 (pool exhausted)
   qs('#planDay').value = wdToday; qs('#planSubj').value='ریاضی'; qs('#planMins').value='25'; qs('#planNote').value='مرور';

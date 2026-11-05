@@ -52,5 +52,5 @@ export function loadApp(seed){
   vm.runInContext(script, sandbox);
   return { qs, store, advance:(ms)=>{ fakeNow+=ms; }, pump:()=>{ intervals.slice().forEach(fn=>{ if(fn) fn(); }); }, sandbox };
 }
-export const FA='۰۱۲۳۴۵۶۷۸۹';
+export const FA='0123456789'; // UI digits are Latin per user preference
 export const fa = n => String(n).replace(/\d/g,d=>FA[d]);

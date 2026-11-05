@@ -408,7 +408,7 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="tabpage on" id="tab-timer">
 <section class="hero" aria-label="تایمر تمرکز">
 <div class="timer-card">
-<h2 style="font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:9px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ac2)"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg> تایمر تمرکز <span style="flex:1"></span><span class="badge" id="sessBadge">۰ نشست امروز</span></h2>
+<h2 style="font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:9px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ac2)"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg> تایمر تمرکز <span style="flex:1"></span><span class="badge" id="sessBadge">0 نشست امروز</span></h2>
 <p class="sub">درس را انتخاب کن، بازه را بزن و شروع کن. پایان هر تمرکز، استراحت پیشنهاد می‌شود.</p>
 <div class="modetabs" role="tablist">
 <button id="tabFocus" class="on"></button>
@@ -417,12 +417,12 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="chips" id="subjChips"></div>
 <div class="dial" id="dial" role="timer" aria-label="تایمر مطالعه">
 <svg viewBox="0 0 230 230"><circle cx="115" cy="115" r="100" fill="none" stroke="var(--bg2)" stroke-width="13"/><circle id="ring" cx="115" cy="115" r="100" fill="none" stroke="var(--ac)" stroke-width="13" stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="0"/></svg>
-<div class="face"><div class="t" id="clock">۲۵:۰۰</div><span class="badge" id="state">آماده</span><span class="fsubj" id="faceSubj"></span></div>
+<div class="face"><div class="t" id="clock">25:00</div><span class="badge" id="state">آماده</span><span class="fsubj" id="faceSubj"></span></div>
 </div>
 <div class="sessline" id="sessLine"></div>
 <p class="lbl" id="plenLbl">بازه تمرکز (دقیقه)</p>
 <div class="presets" id="presets"></div>
-<div class="row" style="margin-top:10px"><input class="inp" id="custom" type="number" min="1" max="240" inputmode="numeric" placeholder="زمان سفارشی — مثلا ۴۰" dir="ltr" style="flex:1"></div>
+<div class="row" style="margin-top:10px"><input class="inp" id="custom" type="number" min="1" max="240" inputmode="numeric" placeholder="زمان سفارشی — مثلا 40" dir="ltr" style="flex:1"></div>
 <div class="ctl">
 <button class="btn pri" id="btnStart"></button>
 <button class="btn" id="btnPause" style="flex:1"></button>
@@ -445,12 +445,12 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="tabpage" id="tab-plan">
 <section class="card" aria-label="برنامه هفتگی">
 <h2>برنامه هفتگی</h2>
-<p class="sub">برای هر درس می‌تونی چند تا تسک جدا ست کنی (مثلا ریاضی: «درسنامه فصل ۳» ۵۰ دقیقه + «تست‌زنی» ۴۰ دقیقه). تایمر و برنامه کاملا سینکن: هر دقیقه‌ای که با تایمر روی یک درس مطالعه کنی، خودکار از تسک‌های همون درس در همون روز کم می‌شه — اول تسک‌های زودتر پر می‌شن و بعد نوبت تسک بعدی می‌رسه.</p>
+<p class="sub">برای هر درس می‌تونی چند تا تسک جدا ست کنی (مثلا ریاضی: «درسنامه فصل 3» 50 دقیقه + «تست‌زنی» 40 دقیقه). تایمر و برنامه کاملا سینکن: هر دقیقه‌ای که با تایمر روی یک درس مطالعه کنی، خودکار از تسک‌های همون درس در همون روز کم می‌شه — اول تسک‌های زودتر پر می‌شن و بعد نوبت تسک بعدی می‌رسه.</p>
 <div class="syncbox" id="planSyncInfo"></div>
-<div class="planform" style="margin-top:10px"><select class="inp" id="planDay"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><select class="inp" id="planSubj" aria-label="درس"></select><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr"><input class="inp" id="planNote" placeholder="عنوان تسک — مثلا فصل ۳ تا ۵، تست‌زنی، مرور" maxlength="80"><button class="btn sm" id="planAdd">افزودن تسک</button></div>
+<div class="planform" style="margin-top:10px"><select class="inp" id="planDay"><option value="6">شنبه</option><option value="0">یکشنبه</option><option value="1">دوشنبه</option><option value="2">سه‌شنبه</option><option value="3">چهارشنبه</option><option value="4">پنجشنبه</option><option value="5">جمعه</option></select><select class="inp" id="planSubj" aria-label="درس"></select><input class="inp" id="planMins" type="number" min="5" max="960" step="5" inputmode="numeric" placeholder="دقیقه" dir="ltr"><input class="inp" id="planNote" placeholder="عنوان تسک — مثلا فصل 3 تا 5، تست‌زنی، مرور" maxlength="80"><button class="btn sm" id="planAdd">افزودن تسک</button></div>
 <div class="seg" id="planDayFilter" style="margin-top:10px"><button data-wd="all" class="on">کل هفته</button><button data-wd="6">شنبه</button><button data-wd="0">یکشنبه</button><button data-wd="1">دوشنبه</button><button data-wd="2">سه‌شنبه</button><button data-wd="3">چهارشنبه</button><button data-wd="4">پنجشنبه</button><button data-wd="5">جمعه</button></div>
 <div id="planList" style="margin-top:6px"></div>
-<div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">۰٪</span><small style="font-size:11px;color:var(--tx2);font-weight:600" id="succLbl">موفقیت هفته</small></div></div>
+<div class="succring" id="succRing" hidden><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg2)" stroke-width="12"/><circle id="succArc" cx="60" cy="60" r="52" fill="none" stroke="var(--ac)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="pct"><span id="succPct">0%</span><small style="font-size:11px;color:var(--tx2);font-weight:600" id="succLbl">موفقیت هفته</small></div></div>
 <p class="evmeta" id="succTx" style="text-align:center;margin-top:4px"></p>
 </section>
 </div>
@@ -460,17 +460,17 @@ main{padding:14px 10px 48px;gap:12px}
 <section class="card" aria-label="آمار امروز">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg> آمار و عملکرد امروز</h2>
 <div class="row" style="margin-top:10px;align-items:flex-end">
-<div style="flex:1;min-width:140px"><div class="big" id="todayTotal">۰</div><span class="evmeta">دقیقه تمرکز امروز • <span id="todayCount">۰ نشست</span></span></div>
+<div style="flex:1;min-width:140px"><div class="big" id="todayTotal">0</div><span class="evmeta">دقیقه تمرکز امروز • <span id="todayCount">0 نشست</span></span></div>
 <div style="flex:1;min-width:180px"><p class="lbl" style="margin-top:0">هدف روزانه (دقیقه)</p><div class="row"><input class="inp" id="goalInp" type="number" min="30" max="960" step="30" inputmode="numeric" dir="ltr" style="flex:1"><button class="btn sm" id="goalSave" style="min-height:48px">ثبت</button></div></div>
 </div>
 <div class="pbar"><div class="bar"><i id="goalBar" style="width:0%"></i></div><span class="evmeta" id="goalTx" style="white-space:nowrap"></span></div>
 <div class="statgrid">
-<div class="statbox streak"><div class="k">استمرار روزانه</div><div class="v" id="streakVal">۰ <small>روز</small></div><div class="streakdays" id="streakDays"></div></div>
-<div class="statbox"><div class="k">رکورد یک روز</div><div class="v" id="recordVal">۰ <small>دقیقه</small></div></div>
-<div class="statbox"><div class="k">مجموع ۷ روز اخیر</div><div class="v" id="weekTotal">۰ <small>دقیقه</small></div></div>
+<div class="statbox streak"><div class="k">استمرار روزانه</div><div class="v" id="streakVal">0 <small>روز</small></div><div class="streakdays" id="streakDays"></div></div>
+<div class="statbox"><div class="k">رکورد یک روز</div><div class="v" id="recordVal">0 <small>دقیقه</small></div></div>
+<div class="statbox"><div class="k">مجموع 7 روز اخیر</div><div class="v" id="weekTotal">0 <small>دقیقه</small></div></div>
 <div class="statbox"><div class="k">بهترین روز هفته</div><div class="v" id="bestDay" style="font-size:16px">—</div></div>
-<div class="statbox"><div class="k">میانگین روزانه</div><div class="v" id="weekAvg">۰ <small>دقیقه</small></div></div>
-<div class="statbox"><div class="k">نشست‌های امروز</div><div class="v" id="sessToday">۰</div></div></div>
+<div class="statbox"><div class="k">میانگین روزانه</div><div class="v" id="weekAvg">0 <small>دقیقه</small></div></div>
+<div class="statbox"><div class="k">نشست‌های امروز</div><div class="v" id="sessToday">0</div></div></div>
 </section>
 
 <!-- Card 2: Premium Report Card (کارنامه جامع تحلیلی) -->
@@ -481,8 +481,8 @@ main{padding:14px 10px 48px;gap:12px}
 <span class="report-meta" id="repDateRange">گزارش عملکرد دوره‌ای</span>
 </div>
 <div class="report-seg" id="repModeSeg">
-<button data-period="7" class="on">۷ روز اخیر (هفتگی)</button>
-<button data-period="30">۳۰ روز اخیر (ماهانه)</button>
+<button data-period="7" class="on">7 روز اخیر (هفتگی)</button>
+<button data-period="30">30 روز اخیر (ماهانه)</button>
 </div>
 </div>
 
@@ -505,16 +505,16 @@ main{padding:14px 10px 48px;gap:12px}
 <!-- Card 4: Historical Trends (7-day & 30-day) -->
 <section class="card" aria-label="روندهای زمانی">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> نمودارهای روند مطالعه</h2>
-<p class="lbl">۷ روز اخیر (ستونی)</p>
+<p class="lbl">7 روز اخیر (ستونی)</p>
 <div class="chart" id="weekChart" style="margin-top:6px"></div>
-<p class="lbl" style="margin-top:20px">نمودار خطی ۳۰ روز اخیر</p>
+<p class="lbl" style="margin-top:20px">نمودار خطی 30 روز اخیر</p>
 <svg class="mchart" id="monthChart" viewBox="0 0 300 110" preserveAspectRatio="none" style="margin-top:6px"></svg>
 </section>
 
 <!-- Card 5: Chronotype & Golden Hours -->
 <section class="card" aria-label="ساعت‌های طلایی و الگوهای زیستی">
 <h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> ساعت‌های طلایی تمرکز</h2>
-<p class="sub">نقشه حرارتی ۲۴ ساعته روز — ساعت‌هایی که بیشترین کشش و بازدهی را داشته‌اید پررنگ‌تر می‌شوند.</p>
+<p class="sub">نقشه حرارتی 24 ساعته روز — ساعت‌هایی که بیشترین کشش و بازدهی را داشته‌اید پررنگ‌تر می‌شوند.</p>
 <div class="heat" id="heatMap" style="margin-top:10px"></div>
 <p class="evmeta" id="goldTx" style="margin-top:10px;font-weight:700"></p>
 </section>
@@ -529,14 +529,14 @@ main{padding:14px 10px 48px;gap:12px}
 
 <div class="tabpage" id="tab-tasks">
 <section class="card" aria-label="کارهای امروز">
-<h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> کارهای امروز <span class="badge" id="todoBadge">۰ باز</span></h2>
+<h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> کارهای امروز <span class="badge" id="todoBadge">0 باز</span></h2>
 <p class="sub">تست، مرور، خلاصه — با اولویت. تیک که بزنی میره ته لیست.</p>
-<div class="row" style="margin-top:10px"><input class="inp" id="newTodo" placeholder="کار تازه — مثلا مرور فصل ۳ شیمی" style="flex:1" maxlength="80"><div class="seg" id="todoPrio" style="flex:0 0 190px"><button data-pr="3">کم</button><button data-pr="2" class="on">متوسط</button><button data-pr="1">زیاد</button></div><button class="btn sm" id="addTodo" style="min-height:48px">افزودن</button></div>
+<div class="row" style="margin-top:10px"><input class="inp" id="newTodo" placeholder="کار تازه — مثلا مرور فصل 3 شیمی" style="flex:1" maxlength="80"><div class="seg" id="todoPrio" style="flex:0 0 190px"><button data-pr="3">کم</button><button data-pr="2" class="on">متوسط</button><button data-pr="1">زیاد</button></div><button class="btn sm" id="addTodo" style="min-height:48px">افزودن</button></div>
 <div id="todoList"></div>
 </section>
 
 <section class="card" aria-label="یادداشت‌ها">
-<h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> یادداشت‌های چسبان <span class="badge" id="noteBadge">۰</span></h2>
+<h2><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> یادداشت‌های چسبان <span class="badge" id="noteBadge">0</span></h2>
 <p class="sub">فرمول، نکته، ایده — خودکار ذخیره می‌شود. سنجاق کن بیاد اول.</p>
 <div class="row" style="margin-top:10px"><button class="btn sm" id="addNote" style="min-height:48px">یادداشت تازه</button></div>
 <div class="note-grid" id="noteGrid"></div>
@@ -588,13 +588,14 @@ main{padding:14px 10px 48px;gap:12px}
 (function(){
 'use strict';
 var $=function(s){return document.querySelector(s)};
-var FA='۰۱۲۳۴۵۶۷۸۹';
+var FA='0123456789';
 var fa=function(v){return String(v).replace(/\d/g,function(d){return FA[d]})};
 var faPad=function(n){n=Math.max(0,Math.floor(n));return fa(String(n).padStart(2,'0'))};
-var en=function(v){return String(v==null?'':v).replace(/[۰-۹]/g,function(d){return FA.indexOf(d)})};
+var FAP='\u06F0\u06F1\u06F2\u06F3\u06F4\u06F5\u06F6\u06F7\u06F8\u06F9',FAA='\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669';
+var en=function(v){return String(v==null?'':v).replace(/[\u06F0-\u06F9]/g,function(d){return FAP.indexOf(d)}).replace(/[\u0660-\u0669]/g,function(d){return FAA.indexOf(d)})};
 var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')};
-function jal(d){try{return new Intl.DateTimeFormat('fa-IR',{year:'numeric',month:'long',day:'numeric'}).format(d)}catch(e){return d.toLocaleDateString()}}
-function jalShort(d){try{return new Intl.DateTimeFormat('fa-IR',{month:'short',day:'numeric'}).format(d)}catch(e){return d.toLocaleDateString()}}
+function jal(d){try{return new Intl.DateTimeFormat('fa-IR-u-nu-latn',{year:'numeric',month:'long',day:'numeric'}).format(d)}catch(e){return d.toLocaleDateString()}}
+function jalShort(d){try{return new Intl.DateTimeFormat('fa-IR-u-nu-latn',{month:'short',day:'numeric'}).format(d)}catch(e){return d.toLocaleDateString()}}
 
 /* localStorage keys */
 var LS_E='god.events.v1',LS_U='god.ui.v1',LS_S='god.study.v1';
@@ -891,7 +892,7 @@ $('#custom').addEventListener('keydown',function(e){
   if(e.key==='Enter'){
     var v=parseInt(en(this.value),10);
     if(v>=1&&v<=240){setLen(v);this.value=''}
-    else toast('زمان باید بین ۱ تا ۲۴۰ دقیقه باشد');
+    else toast('زمان باید بین 1 تا 240 دقیقه باشد');
   }
 });
 
@@ -1035,7 +1036,7 @@ function renderStats(){
   var mx=Math.max.apply(null,[1].concat(names.map(function(n){return per[n]})));
   $('#perSubj').innerHTML=names.length?names.map(function(n){
     var pct=Math.round(per[n]/tMins*100)||0;
-    return '<div style="display:flex;align-items:center;gap:8px;margin-top:9px"><span class="dot" style="background:'+colorOf(n)+'"></span><span style="font-size:13px;min-width:90px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(n)+'</span><div class="bar" style="flex:1"><i style="width:'+Math.round(per[n]/mx*100)+'%;background:'+colorOf(n)+'"></i></div><span class="evmeta" style="min-width:76px;text-align:left;font-variant-numeric:tabular-nums">'+fa(per[n])+' د ('+fa(pct)+'٪)</span></div>';
+    return '<div style="display:flex;align-items:center;gap:8px;margin-top:9px"><span class="dot" style="background:'+colorOf(n)+'"></span><span style="font-size:13px;min-width:90px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(n)+'</span><div class="bar" style="flex:1"><i style="width:'+Math.round(per[n]/mx*100)+'%;background:'+colorOf(n)+'"></i></div><span class="evmeta" style="min-width:76px;text-align:left;font-variant-numeric:tabular-nums">'+fa(per[n])+' د ('+fa(pct)+'%)</span></div>';
   }).join(''):'<div class="empty"><b>امروز هنوز تمرکزی ثبت نشده</b>یک درس انتخاب کن و اولین نشست را شروع کن.</div>';
   
   // 7-day bar chart & summary stats
@@ -1045,8 +1046,8 @@ function renderStats(){
   var best=days.slice().sort(function(a,b){return b.m-a.m})[0];
   $('#weekTotal').innerHTML=fa(wTotal)+' <small>دقیقه</small>';
   $('#weekAvg').innerHTML=fa(Math.round(wTotal/7))+' <small>دقیقه</small>';
-  $('#bestDay').textContent=best&&best.m>0?(best.d.toLocaleDateString('fa-IR',{weekday:'long'})+' • '+fa(best.m)+' دقیقه'):'—';
-  $('#weekChart').innerHTML=days.map(function(x){return '<div class="col'+(x.today?' today':'')+'"><span class="v">'+(x.m?fa(x.m):'')+'</span><div class="cbar" title="'+fa(x.m)+' دقیقه" style="height:'+Math.max(6,Math.round(x.m/mmax*84))+'px"></div><small>'+x.d.toLocaleDateString('fa-IR',{weekday:'short'})+'</small></div>'}).join('');
+  $('#bestDay').textContent=best&&best.m>0?(best.d.toLocaleDateString('fa-IR-u-nu-latn',{weekday:'long'})+' • '+fa(best.m)+' دقیقه'):'—';
+  $('#weekChart').innerHTML=days.map(function(x){return '<div class="col'+(x.today?' today':'')+'"><span class="v">'+(x.m?fa(x.m):'')+'</span><div class="cbar" title="'+fa(x.m)+' دقیقه" style="height:'+Math.max(6,Math.round(x.m/mmax*84))+'px"></div><small>'+x.d.toLocaleDateString('fa-IR-u-nu-latn',{weekday:'short'})+'</small></div>'}).join('');
   
   // Session log
   var last=SLOG.map(function(s,idx){return{s:s,idx:idx}}).slice(-15).reverse();
@@ -1118,7 +1119,7 @@ function getReportData(daysCount){
   SLOG.forEach(function(s){if((Date.now()-s.ts)<=windowMs)hrs[new Date(s.ts).getHours()]+=minsOf(s)});
   var topH=-1,maxH=0;
   hrs.forEach(function(m,h){if(m>maxH){maxH=m;topH=h}});
-  var goldenStr=topH>=0?(fa(topH)+':۰۰ تا '+fa((topH+2)%24)+':۰۰'):'ثبت نشده';
+  var goldenStr=topH>=0?(fa(topH)+':00 تا '+fa((topH+2)%24)+':00'):'ثبت نشده';
   
   var expectedMins=(UI.goal||240)*daysCount;
   var goalRate=expectedMins>0?Math.min(100,(totalMins/expectedMins)*100):0;
@@ -1134,11 +1135,11 @@ function getReportData(daysCount){
   if(totalMins===0){
     insight='هنوز مطالعه‌ای در این بازه ثبت نشده است. اولین نشست تمرکز خود را آغاز کن تا کارنامه فعال شود!';
   }else if(topSubj&&perSubj[topSubj]/totalMins>0.55&&subjNames.length>1){
-    insight='تمرکز بسیار بالایی روی درس «'+topSubj+'» داشته‌اید ('+fa(Math.round(perSubj[topSubj]/totalMins*100))+'٪ کل زمان). برای توازن تراز کنکور، اختصاص زمان مناسب به سایر دروس توصیه می‌شود.';
+    insight='تمرکز بسیار بالایی روی درس «'+topSubj+'» داشته‌اید ('+fa(Math.round(perSubj[topSubj]/totalMins*100))+'% کل زمان). برای توازن تراز کنکور، اختصاص زمان مناسب به سایر دروس توصیه می‌شود.';
   }else if(activeDays===daysCount){
-    insight='استمرار ۱۰۰ درصدی شما ستودنی است! تداوم بدون وقفه رمز تسلط کنکوری است. به کیفیت استراحت‌های کوتاه نیز توجه کنید.';
+    insight='استمرار 100 درصدی شما ستودنی است! تداوم بدون وقفه رمز تسلط کنکوری است. به کیفیت استراحت‌های کوتاه نیز توجه کنید.';
   }else if(totalMins/daysCount>=300){
-    insight='میانگین مطالعه بیش از ۵ ساعت در روز شبیه داوطلبان رتبه برتر است! تعادل میان خواب و مطالعه را حفظ کنید.';
+    insight='میانگین مطالعه بیش از 5 ساعت در روز شبیه داوطلبان رتبه برتر است! تعادل میان خواب و مطالعه را حفظ کنید.';
   }else{
     insight='روند مطالعه شما رو به رشد است. با افزایش تدریجی واحدهای تمرکز، می‌توانید تراز خود را به سطح الماس برسانید.';
   }
@@ -1173,17 +1174,17 @@ function renderReportCard(){
   
   var distLegend=d.subjNames.map(function(sn){
     var pct=Math.round(d.perSubj[sn]/d.totalMins*100);
-    return '<div class="dist-item"><span class="dot" style="background:'+colorOf(sn)+'"></span><b>'+esc(sn)+'</b><span class="evmeta">'+fa(d.perSubj[sn])+' د ('+fa(pct)+'٪)</span></div>';
+    return '<div class="dist-item"><span class="dot" style="background:'+colorOf(sn)+'"></span><b>'+esc(sn)+'</b><span class="evmeta">'+fa(d.perSubj[sn])+' د ('+fa(pct)+'%)</span></div>';
   }).join('');
   
   var studentTitle=UI.studentName?('داوطلب: <b>'+esc(UI.studentName)+'</b> • '):'';
   
   $('#repCardView').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:12.5px;color:var(--tx2)"><span>'+studentTitle+'ساعت مطالعه کنکور</span><span class="badge" style="font-size:11px">'+d.tier.badge+'</span></div>'
   +'<div class="report-kpis">'
-  +'<div class="rkpi"><span class="rk">تراز تمرکز دوره‌ای</span><span class="rv score">'+fa(d.score)+' <small style="font-size:13px;color:var(--tx2)">/ ۱۰۰</small></span><span class="badge" style="font-size:10px">'+d.tier.title+'</span></div>'
+  +'<div class="rkpi"><span class="rk">تراز تمرکز دوره‌ای</span><span class="rv score">'+fa(d.score)+' <small style="font-size:13px;color:var(--tx2)">/ 100</small></span><span class="badge" style="font-size:10px">'+d.tier.title+'</span></div>'
   +'<div class="rkpi"><span class="rk">مجموع ساعات مطالعه</span><span class="rv">'+fa(d.totalHours)+' <small style="font-size:12px">ساعت</small></span><span class="evmeta">'+fa(d.totalMins)+' دقیقه</span></div>'
   +'<div class="rkpi"><span class="rk">میانگین روزانه</span><span class="rv">'+fa(d.avgDaily)+' <small style="font-size:12px">دقیقه</small></span><span class="evmeta">'+fa((d.avgDaily/60).toFixed(1))+' ساعت/روز</span></div>'
-  +'<div class="rkpi"><span class="rk">روزهای فعال و متعهد</span><span class="rv">'+fa(d.activeDays)+' <small style="font-size:12px">از '+fa(p)+'</small></span><span class="evmeta">'+fa(Math.round(d.activeDays/p*100))+'٪ استمرار</span></div>'
+  +'<div class="rkpi"><span class="rk">روزهای فعال و متعهد</span><span class="rv">'+fa(d.activeDays)+' <small style="font-size:12px">از '+fa(p)+'</small></span><span class="evmeta">'+fa(Math.round(d.activeDays/p*100))+'% استمرار</span></div>'
   +'</div>'
   +'<div class="report-dist">'
   +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--tx1)"><span>توزیع زمان بین دروس</span><span>'+fa(d.subjNames.length)+' درس</span></div>'
@@ -1262,10 +1263,10 @@ function downloadReportPNG(){
   
   // 4 KPI Cards
   var kpis=[
-    {k:'تراز تمرکز',v:fa(d.score)+' / ۱۰۰',s:d.tier.title},
+    {k:'تراز تمرکز',v:fa(d.score)+' / 100',s:d.tier.title},
     {k:'مجموع ساعت مطالعه',v:fa(d.totalHours)+' ساعت',s:fa(d.totalMins)+' دقیقه'},
     {k:'میانگین روزانه',v:fa(d.avgDaily)+' دقیقه',s:fa((d.avgDaily/60).toFixed(1))+' ساعت/روز'},
-    {k:'روزهای فعال و متعهد',v:fa(d.activeDays)+' از '+fa(p),s:fa(Math.round(d.activeDays/p*100))+'٪ استمرار'}
+    {k:'روزهای فعال و متعهد',v:fa(d.activeDays)+' از '+fa(p),s:fa(Math.round(d.activeDays/p*100))+'% استمرار'}
   ];
   
   var kpiW=255,kpiH=110,kpiY=175;
@@ -1315,7 +1316,7 @@ function downloadReportPNG(){
     c.textAlign='right';
     c.font='bold 18px Rokh, Tahoma';c.fillStyle=dark?'#f1f5f9':'#1e293b';
     var pct=Math.round(d.perSubj[sn]/d.totalMins*100);
-    c.fillText(sn+': '+fa(d.perSubj[sn])+' دقیقه ('+fa(pct)+'٪)',colX-16,rowY);
+    c.fillText(sn+': '+fa(d.perSubj[sn])+' دقیقه ('+fa(pct)+'%)',colX-16,rowY);
   });
   
   // Highlights (Golden Subject & Hour)
@@ -1369,7 +1370,7 @@ function copyReportText(){
     '━━━━━━━━━━━━━━━━━━━━',
     ' دوره: '+jalShort(d.dStart)+' تا '+jalShort(d.dEnd)+' ('+fa(p)+' روز)',
     UI.studentName?(' داوطلب: '+UI.studentName):'',
-    ' تراز تمرکز: '+fa(d.score)+' از ۱۰۰ ('+d.tier.badge+')',
+    ' تراز تمرکز: '+fa(d.score)+' از 100 ('+d.tier.badge+')',
     ' مجموع ساعات مطالعه: '+fa(d.totalHours)+' ساعت ('+fa(d.totalMins)+' دقیقه)',
     ' میانگین روزانه: '+fa(d.avgDaily)+' دقیقه',
     ' روزهای فعال: '+fa(d.activeDays)+' از '+fa(p)+' روز',
@@ -1378,7 +1379,7 @@ function copyReportText(){
   ];
   d.subjNames.forEach(function(sn){
     var pct=Math.round(d.perSubj[sn]/d.totalMins*100);
-    lines.push('• '+sn+': '+fa(d.perSubj[sn])+' دقیقه ('+fa(pct)+'٪)');
+    lines.push('• '+sn+': '+fa(d.perSubj[sn])+' دقیقه ('+fa(pct)+'%)');
   });
   lines.push('━━━━━━━━━━━━━━━━━━━━');
   if(d.topSubj)lines.push(' درس طلایی: '+d.topSubj+' ('+fa(d.perSubj[d.topSubj])+' دقیقه)');
@@ -1422,7 +1423,7 @@ if(sInp){
   sInp.onkeydown=function(e){if(e.key==='Enter')$('#saveStudentName').click()};
 }
 
-function saveGoal(){var v=parseInt(en($('#goalInp').value),10);if(!(v>=30&&v<=960)){toast('هدف باید بین ۳۰ تا ۹۶۰ باشد');return}UI.goal=v;saveUI();renderStats();toast('هدف روزانه ثبت شد — '+fa(v)+' دقیقه')}
+function saveGoal(){var v=parseInt(en($('#goalInp').value),10);if(!(v>=30&&v<=960)){toast('هدف باید بین 30 تا 960 باشد');return}UI.goal=v;saveUI();renderStats();toast('هدف روزانه ثبت شد — '+fa(v)+' دقیقه')}
 $('#goalSave').onclick=saveGoal;
 $('#goalInp').addEventListener('keydown',function(e){if(e.key==='Enter')saveGoal()});
 
@@ -1645,7 +1646,7 @@ function planAdd(){
   var wd=(($('#planDay')||{}).value||'');
   if(wd==='')wd=String(new Date().getDay());
   if(!s){toast('اول یک درس بساز یا انتخاب کن');return}
-  if(!(m>=5&&m<=960)){toast('دقیقه باید بین ۵ تا ۹۶۰ باشد');return}
+  if(!(m>=5&&m<=960)){toast('دقیقه باید بین 5 تا 960 باشد');return}
   /* multi-task is allowed — only an exact duplicate (same day+subject+title+minutes) is blocked */
   if(nt&&PLAN.some(function(p){return String(p.wd)===String(wd)&&p.subj===s&&p.note===nt&&p.goal===m})){toast('همین تسک با همین عنوان و زمان هست');return}
   PLAN.push({wd:String(wd),day:'',subj:s,goal:m,note:nt,done:false,ts:Date.now()});
@@ -1704,7 +1705,7 @@ function renderPlan(){
   var pct=totGoal?Math.round(totDone/totGoal*100):0;
   var ring=$('#succRing');if(ring)ring.hidden=!arr.length;
   var arc=$('#succArc');if(arc)arc.style.strokeDashoffset=String(326.7*(1-pct/100));
-  var sp=$('#succPct');if(sp)sp.textContent=fa(pct)+'٪';
+  var sp=$('#succPct');if(sp)sp.textContent=fa(pct)+'%';
   var sl=$('#succLbl');if(sl)sl.textContent=PLANFILTER==='all'?'موفقیت هفته (دقیقه‌ای)':'موفقیت این روز (دقیقه‌ای)';
   var stx=$('#succTx');if(stx)stx.textContent=arr.length?(fa(doneTasks)+' از '+fa(totTasks)+' تسک کامل شده • '+fa(totDone)+' از '+fa(totGoal)+' دقیقه انجام شده • '+fa(Math.max(0,totGoal-totDone))+' دقیقه مانده'):'';
 }
