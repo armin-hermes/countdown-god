@@ -10,11 +10,19 @@ const realNow = Date.now;
 let fakeNow = realNow();
 
 class El {
-  constructor(tag='div'){ this.tagName=(tag||'div').toUpperCase(); this.children=[]; this.dataset={}; this.style={setProperty(){},removeProperty(){}}; this._cls=new Set();
+  constructor(tag='div'){ this.tagName=(tag||'div').toUpperCase(); this.children=[]; this.dataset={}; this.style={setProperty(){},removeProperty(){}}; this._cls=new Set(); this._qc={};
     this.classList={add:(...c)=>c.forEach(x=>this._cls.add(x)),remove:(...c)=>c.forEach(x=>this._cls.delete(x)),toggle:(c,f)=>{ if(f===undefined) f=!this._cls.has(c); f?this._cls.add(c):this._cls.delete(c); return f; },contains:c=>this._cls.has(c)};
-    this.innerHTML=''; this.textContent=''; this.value=''; this.hidden=false; this.parentNode=null; }
+    let _html='';
+    Object.defineProperty(this,'innerHTML',{get:()=>_html,set:(v)=>{ _html=String(v); this._qc={}; }});
+    this.textContent=''; this.value=''; this.hidden=false; this.parentNode=null; }
   querySelector(){ return new El(); }
-  querySelectorAll(){ return []; }
+  querySelectorAll(sel){
+    const m=/\[data-([a-zA-Z-]+)\]/.exec(sel||''); if(!m) return [];
+    if(this._qc[sel]) return this._qc[sel];
+    const re=new RegExp('data-'+m[1]+'="(\\d+)"','g'); const out=[]; let mm;
+    while((mm=re.exec(this.innerHTML))){ const el=new El('button'); el.dataset[m[1]]=mm[1]; out.push(el); }
+    this._qc[sel]=out; return out;
+  }
   addEventListener(){}
   appendChild(c){ this.children.push(c); c.parentNode=this; return c; }
   focus(){} select(){} click(){ if(this.onclick) this.onclick({stopPropagation(){}}); }

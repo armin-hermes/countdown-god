@@ -409,10 +409,11 @@ main{padding:14px 10px 48px;gap:12px}
 <section class="hero" aria-label="تایمر تمرکز">
 <div class="timer-card">
 <h2 style="font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:9px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ac2)"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg> تایمر تمرکز <span style="flex:1"></span><span class="badge" id="sessBadge">0 نشست امروز</span></h2>
-<p class="sub">درس را انتخاب کن، بازه را بزن و شروع کن. پایان هر تمرکز، استراحت پیشنهاد می‌شود.</p>
+<p class="sub">درس را انتخاب کن و شروع کن — یا روی تسک‌های برنامه دکمه شروع را بزن تا تایمر خودش ست شود. کرنومتر آزاد (بدون سقف) و اضافه‌کار بعد از پایان زمان هم هست.</p>
 <div class="modetabs" role="tablist">
 <button id="tabFocus" class="on"></button>
 <button id="tabBreak" class="brk"></button>
+<button id="tabFree"></button>
 </div>
 <div class="chips" id="subjChips"></div>
 <div class="dial" id="dial" role="timer" aria-label="تایمر مطالعه">
@@ -422,7 +423,7 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="sessline" id="sessLine"></div>
 <p class="lbl" id="plenLbl">بازه تمرکز (دقیقه)</p>
 <div class="presets" id="presets"></div>
-<div class="row" style="margin-top:10px"><input class="inp" id="custom" type="number" min="1" max="240" inputmode="numeric" placeholder="زمان سفارشی — مثلا 40" dir="ltr" style="flex:1"></div>
+<div class="row" style="margin-top:10px"><input class="inp" id="custom" type="number" min="1" max="960" inputmode="numeric" placeholder="زمان سفارشی — مثلا 40" dir="ltr" style="flex:1"></div>
 <div class="ctl">
 <button class="btn pri" id="btnStart"></button>
 <button class="btn" id="btnPause" style="flex:1"></button>
@@ -610,7 +611,7 @@ if(!UI.subjects.some(function(s){return s.name===UI.subject}))UI.subject=UI.subj
 if(UI.soundType==='zen')UI.soundType='tibetan_bowl';if(UI.soundType==='digital')UI.soundType='digital_alarm';
 UI.focusLen=Math.min(240,Math.max(1,+UI.focusLen||25));
 UI.breakLen=Math.min(60,Math.max(1,+UI.breakLen||5));
-if(UI.tmode!=='focus'&&UI.tmode!=='break')UI.tmode='focus';
+if(UI.tmode!=='focus'&&UI.tmode!=='break'&&UI.tmode!=='free')UI.tmode='focus';
 function saveUI(){try{localStorage.setItem(LS_U,JSON.stringify(UI))}catch(e){}}
 
 var SLOG=[];try{SLOG=JSON.parse(localStorage.getItem(LS_S)||'[]');if(!Array.isArray(SLOG))SLOG=[]}catch(e){SLOG=[]}
@@ -731,41 +732,58 @@ function tickSnd(){
 /* timer with focus/break & Konkur presets */
 var FOCUS_PRE=[25,50,90],BREAK_PRE=[5,10,15];
 
-var T={total:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,remain:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,running:false,endAt:0,timer:null,lastSec:-1};
+var T={total:UI.tmode==='free'?0:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,remain:UI.tmode==='free'?0:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,running:false,endAt:0,timer:null,lastSec:-1,elapsed0:0,startStamp:0,overtime:false,ot0:0,otStart:0};
 var TITLE='ساعت مطالعه کنکور';
 function isBreak(){return UI.tmode==='break'}
+function isFree(){return UI.tmode==='free'}
 function curLen(){return isBreak()?UI.breakLen:UI.focusLen}
-function fmt(s){s=Math.max(0,Math.ceil(s));return faPad(Math.floor(s/60))+':'+faPad(s%60)}
-function ring(){var C=628.3,p=T.total?T.remain/T.total:0;$('#ring').style.strokeDashoffset=String(C*(1-p))}
+function fmt(s){s=Math.max(0,Math.ceil(s));if(s>=3600){return fa(Math.floor(s/3600))+':'+faPad(Math.floor(s%3600/60))+':'+faPad(s%60)}return faPad(Math.floor(s/60))+':'+faPad(s%60)}
+function curElapsedSec(){return isFree()?(T.elapsed0+(T.running?(Date.now()-T.startStamp)/1000:0)):0}
+function curOtSec(){return T.overtime?(T.ot0+(T.running?(Date.now()-T.otStart)/1000:0)):0}
+function ring(){var C=628.3;if(isFree()||T.overtime){$('#ring').style.strokeDashoffset='0';return}var p=T.total?T.remain/T.total:0;$('#ring').style.strokeDashoffset=String(C*(1-p))}
 
 function renderTimer(){
-  var c=$('#clock');c.textContent=fmt(T.remain);
-  document.title=(T.running?('('+fmt(T.remain)+') '):'')+TITLE;
+  var c=$('#clock');
+  if(T.overtime)c.textContent='+'+fmt(curOtSec());
+  else if(isFree())c.textContent=fmt(curElapsedSec());
+  else c.textContent=fmt(T.remain);
+  document.title=(T.running?('('+c.textContent+') '):'')+TITLE;
   ring();
   var st=$('#state');
-  st.textContent=T.running?(isBreak()?'استراحت فعال':'در حال تمرکز'):(T.remain===T.total?'آماده':T.remain<=0?'پایان':'مکث');
+  st.textContent=T.overtime?'اضافه‌کار':isFree()?(T.running?'کرنومتر در حال شمارش':'کرنومتر آماده'):T.running?(isBreak()?'استراحت فعال':'در حال تمرکز'):(T.remain===T.total?'آماده':T.remain<=0?'پایان':'مکث');
   st.className='badge '+(isBreak()?'brk':'')+(T.running?' run':'');
   var s=UI.subject;
   $('#faceSubj').textContent=isBreak()?'استراحت و تنفس':s;
   $('#faceSubj').style.color=isBreak()?'var(--tx2)':colorOf(s);
   $('#tabFocus').textContent='تمرکز ('+fa(UI.focusLen)+' دقیقه)';
-  $('#tabFocus').classList.toggle('on',!isBreak());
+  $('#tabFocus').classList.toggle('on',!isBreak()&&!isFree());
   $('#tabBreak').textContent='استراحت ('+fa(UI.breakLen)+' دقیقه)';
   $('#tabBreak').classList.toggle('on',isBreak());
-  $('#plenLbl').textContent=isBreak()?'بازه استراحت (دقیقه)':'بازه تمرکز (دقیقه)';
+  var tf=$('#tabFree');if(tf){tf.textContent='کرنومتر آزاد';tf.classList.toggle('on',isFree())}
+  $('#plenLbl').textContent=T.overtime?'اضافه‌کار — داری بیشتر از برنامه می‌خونی':isFree()?'کرنومتر آزاد — بدون سقف زمانی':isBreak()?'بازه استراحت (دقیقه)':'بازه تمرکز (دقیقه)';
   renderPresets();
   var bS=$('#btnStart'),bP=$('#btnPause'),bR=$('#btnReset');
-  bS.innerHTML=ic('play','sm')+' '+(T.remain<T.total?'ادامه':'شروع');
-  bS.style.display=T.running?'none':'inline-flex';
+  if(T.overtime){
+    bS.innerHTML=ic('check','sm')+' پایان نشست و استراحت';
+    bS.style.display='inline-flex';
+  }else if(isFree()){
+    bS.innerHTML=ic('play','sm')+' '+(curElapsedSec()>0?'ادامه':'شروع');
+    bS.style.display=T.running?'none':'inline-flex';
+  }else{
+    bS.innerHTML=ic('play','sm')+' '+(T.remain<T.total?'ادامه':'شروع');
+    bS.style.display=T.running?'none':'inline-flex';
+  }
   bP.innerHTML=ic('pause','sm')+' مکث';
   bP.style.display=T.running?'inline-flex':'none';
-  bR.innerHTML=ic('reset','sm')+' ریست';
+  bR.innerHTML=isFree()?ic('check','sm')+' پایان و ثبت':ic('reset','sm')+' ریست';
+  bR.style.display=T.overtime?'none':'inline-flex';
   var bZ=$('#btnZen');bZ.innerHTML=ic('tgt','sm');bZ.title=document.body.classList.contains('zen')?'خروج از فوکوس':'حالت فوکوس';
   var bSn=$('#btnSound');bSn.innerHTML=ic(UI.sound?'snd':'mute','sm');bSn.title=UI.sound?'صدا فعال است':'صدا قطع است';
   renderSess();
 }
 
 function renderPresets(){
+  if(isFree()||T.overtime){$('#presets').innerHTML='';return}
   var list=isBreak()?BREAK_PRE:FOCUS_PRE;
   var pr=$('#presets');
   pr.innerHTML=list.map(function(p){
@@ -782,7 +800,9 @@ function renderPresets(){
 }
 
 function setLen(m){
-  m=Math.max(1,Math.min(240,m));
+  if(isFree())setMode('focus');
+  if(T.overtime)return;
+  m=Math.max(1,Math.min(960,m));
   if(isBreak())UI.breakLen=m;else UI.focusLen=m;
   saveUI();
   T.total=m*60;T.remain=T.total;T.lastSec=-1;
@@ -792,23 +812,39 @@ function setLen(m){
 }
 
 function setMode(m){
-  if(m!=='focus'&&m!=='break')return;
+  if(m!=='focus'&&m!=='break'&&m!=='free')return;
+  if(m===UI.tmode){renderTimer();return}
+  /* switching tabs mid-session: log the elapsed part under the CURRENT
+     subject first, so minutes are never lost by tapping another tab */
+  flushSession();
   UI.tmode=m;saveUI();
-  var l=curLen();
-  T.total=l*60;T.remain=T.total;T.lastSec=-1;
-  if(T.running){T.endAt=Date.now()+T.remain*1000}
+  if(isFree()){T.total=0;T.remain=0}
+  else{var l=curLen();T.total=l*60;T.remain=T.total}
+  T.lastSec=-1;
   renderTimer();
 }
 
 function tickFn(){
   if(!T.running)return;
   var now=Date.now();
+  if(T.overtime){
+    var ot=curOtSec();var osec=Math.floor(ot);
+    if(osec!==T.lastSec){T.lastSec=osec;$('#clock').textContent='+'+fmt(ot)}
+    return;
+  }
+  if(isFree()){
+    var el=curElapsedSec();var esec=Math.floor(el);
+    if(esec!==T.lastSec){T.lastSec=esec;T.remain=el;$('#clock').textContent=fmt(el)}
+    return;
+  }
   var rem=Math.max(0,(T.endAt-now)/1000);
   var sec=Math.ceil(rem);
   if(sec!==T.lastSec){
     T.lastSec=sec;
     if(T.remain>0&&rem<=0){
-      T.remain=0;finishT();return;
+      T.remain=0;
+      if(isBreak()){finishBreak()}else{enterOvertime()}
+      return;
     }
     T.remain=rem;
     $('#clock').textContent=fmt(T.remain);
@@ -816,8 +852,68 @@ function tickFn(){
   }
 }
 
+function enterOvertime(){
+  /* countdown reached zero in focus mode: do NOT stop the student.
+     Keep counting up as overtime until they end the session themselves. */
+  T.overtime=true;T.ot0=Math.max(0,(Date.now()-T.endAt)/1000);T.otStart=Date.now();T.lastSec=-1;
+  playChime('focus');
+  confettiBurst();
+  renderTimer();
+  toast('زمان برنامه تموم شد — اضافه‌کار شروع شد؛ هر وقت خواستی «پایان نشست» را بزن');
+}
+
+function finishActiveSession(autoBreak){
+  var mins=0;
+  if(T.overtime)mins=Math.max(1,Math.round((T.total+curOtSec())/60));
+  else if(isFree())mins=Math.max(1,Math.round(curElapsedSec()/60));
+  var wasFree=isFree();
+  T.running=false;clearInterval(T.timer);
+  T.overtime=false;T.ot0=0;T.elapsed0=0;T.lastSec=-1;
+  T.remain=T.total; /* session closed: leave a fresh timer, so a later
+     tab switch (setMode -> flushSession) does not re-log these minutes */
+  if(mins>=1){
+    SLOG.push({subj:UI.subject,mins:mins,ts:Date.now()});
+    saveStudy();renderStats();
+  }
+  if(autoBreak){
+    toast('نشست '+fa(mins)+' دقیقه‌ای '+UI.subject+' ثبت شد — وقت استراحت است');
+    setMode('break');startT();
+  }else{
+    setMode(wasFree?'free':'focus');
+    toast(mins>=1?('نشست '+fa(mins)+' دقیقه‌ای '+UI.subject+' ثبت شد'):'نشستی ثبت نشد');
+  }
+}
+
+/* stop whatever session is active and log its minutes under the CURRENT
+   subject; returns logged minutes (0 if nothing worth logging) */
+function flushSession(){
+  var secs=0;
+  if(!isBreak()){
+    if(T.overtime)secs=T.total+curOtSec();
+    else if(isFree())secs=curElapsedSec();
+    else if(T.running||T.remain<T.total)secs=T.total-(T.running?Math.max(0,(T.endAt-Date.now())/1000):T.remain);
+  }
+  T.running=false;clearInterval(T.timer);
+  T.overtime=false;T.ot0=0;T.elapsed0=0;T.lastSec=-1;
+  if(secs>=60){
+    var m=Math.max(1,Math.round(secs/60));
+    SLOG.push({subj:UI.subject,mins:m,ts:Date.now()});
+    saveStudy();renderStats();
+    return m;
+  }
+  return 0;
+}
+
 function startT(){
   if(T.running)return;
+  if(T.overtime){T.otStart=Date.now();T.running=true;clearInterval(T.timer);T.timer=setInterval(tickFn,250);renderTimer();return}
+  if(isFree()){
+    T.startStamp=Date.now();T.running=true;
+    clearInterval(T.timer);T.timer=setInterval(tickFn,250);
+    renderTimer();
+    toast('کرنومتر شروع شد — '+UI.subject);
+    return;
+  }
   if(T.remain<=0){T.remain=T.total;T.lastSec=-1}
   T.running=true;
   T.endAt=Date.now()+T.remain*1000;
@@ -829,12 +925,20 @@ function startT(){
 function toggleT(){if(T.running)pauseT(false);else startT()}
 function pauseT(silent){
   if(!T.running)return;
+  if(T.overtime){T.ot0=curOtSec();T.running=false;clearInterval(T.timer);renderTimer();if(!silent)toast('اضافه‌کار متوقف شد');return}
+  if(isFree()){T.elapsed0=curElapsedSec();T.running=false;clearInterval(T.timer);renderTimer();if(!silent)toast('کرنومتر متوقف شد');return}
   T.remain=Math.max(0,(T.endAt-Date.now())/1000);
   T.running=false;clearInterval(T.timer);
   renderTimer();
   if(!silent)toast('تایمر متوقف شد');
 }
 function resetT(){
+  if(T.overtime){finishActiveSession(false);return}
+  if(isFree()){
+    if(curElapsedSec()>=60){finishActiveSession(false);return}
+    T.running=false;clearInterval(T.timer);T.elapsed0=0;T.lastSec=-1;
+    renderTimer();toast('کرنومتر ریست شد');return;
+  }
   var elapsed=T.total-T.remain;
   var wasRun=T.running;
   T.running=false;clearInterval(T.timer);
@@ -849,27 +953,30 @@ function resetT(){
   toast('تایمر ریست شد');
 }
 
-function finishT(){
+function finishBreak(){
   T.running=false;clearInterval(T.timer);
-  if(isBreak()){
-    playChime('break');
-    setMode('focus');
-    renderStats();
-    toast('استراحت تمام شد — آماده تمرکز بعدی ');
-  }else{
-    var m=Math.max(1,Math.round(T.total/60));
-    SLOG.push({subj:UI.subject,mins:m,ts:Date.now()});
-    saveStudy();
-    playChime('focus');
-    confettiBurst();
-    renderStats();
-    toast('نشست '+fa(m)+' دقیقه‌ای '+UI.subject+' ثبت شد — وقت استراحت است ');
-    setMode('break');
-    startT();
-  }
+  playChime('break');
+  setMode('focus');
+  renderStats();
+  toast('استراحت تمام شد — آماده تمرکز بعدی ');
 }
 
-$('#btnStart').onclick=startT;
+/* start the timer straight from a weekly-plan task: subject + minutes
+   come from the task itself */
+function startFromPlan(i){
+  var p=PLAN[i];if(!p)return;
+  flushSession();
+  UI.subject=p.subj;UI.tmode='focus';
+  UI.focusLen=Math.max(1,Math.min(960,p.goal));
+  saveUI();
+  T.total=UI.focusLen*60;T.remain=T.total;T.lastSec=-1;T.overtime=false;T.elapsed0=0;
+  renderChips();renderSubjList();
+  showTab('timer');
+  startT();
+  toast('از برنامه شروع شد: '+p.subj+(p.note?' — '+p.note:'')+' ('+fa(UI.focusLen)+' دقیقه)');
+}
+
+$('#btnStart').onclick=function(){if(T.overtime){finishActiveSession(true)}else{startT()}};
 $('#btnPause').onclick=function(){pauseT(false)};
 $('#btnReset').onclick=resetT;
 $('#btnSound').onclick=function(){
@@ -880,6 +987,7 @@ $('#btnSound').onclick=function(){
 $('#btnZen').onclick=function(){document.body.classList.toggle('zen');renderTimer();window.scrollTo({top:0,behavior:'smooth'})};
 $('#tabFocus').onclick=function(){setMode('focus')};
 $('#tabBreak').onclick=function(){setMode('break')};
+$('#tabFree').onclick=function(){setMode('free')};
 
 document.addEventListener('keydown',function(e){
   if(e.code!=='Space'&&e.key!==' ')return;
@@ -891,8 +999,8 @@ document.addEventListener('keydown',function(e){
 $('#custom').addEventListener('keydown',function(e){
   if(e.key==='Enter'){
     var v=parseInt(en(this.value),10);
-    if(v>=1&&v<=240){setLen(v);this.value=''}
-    else toast('زمان باید بین 1 تا 240 دقیقه باشد');
+    if(v>=1&&v<=960){setLen(v);this.value=''}
+    else toast('زمان باید بین 1 تا 960 دقیقه باشد');
   }
 });
 
@@ -913,21 +1021,14 @@ function renderChips(){
 function selectSubject(n){
   if(!n||n===UI.subject){if(n){renderChips();renderTimer();renderSubjList()}return}
   /* switching subject mid-session: log the elapsed part under the OLD subject
-     first, so study minutes never land on the wrong subject / plan task */
-  if(!isBreak()&&(T.running||T.remain<T.total)){
-    var remNow=T.running?Math.max(0,(T.endAt-Date.now())/1000):T.remain;
-    var elapsed=T.total-remNow;
-    T.running=false;clearInterval(T.timer);
-    if(elapsed>=60){
-      var m=Math.max(1,Math.round(elapsed/60));
-      SLOG.push({subj:UI.subject,mins:m,ts:Date.now()});
-      saveStudy();renderStats();
-      toast('نشست '+UI.subject+' ('+fa(m)+' دقیقه) ثبت شد — حالا '+n);
-    }
-    T.total=curLen()*60;T.remain=T.total;T.lastSec=-1;
-  }
+     first (countdown, free stopwatch and overtime alike), so study minutes
+     never land on the wrong subject / plan task */
+  var logged=flushSession();
   UI.subject=n;saveUI();
+  if(isFree()){T.total=0;T.remain=0}else{T.total=curLen()*60;T.remain=T.total}
+  T.lastSec=-1;
   renderChips();renderTimer();renderSubjList();
+  if(logged)toast('نشست قبلی ('+fa(logged)+' دقیقه) ثبت شد — حالا '+n);
 }
 
 function renderSess(){
@@ -1695,11 +1796,12 @@ function renderPlan(){
         var pct=p.goal?Math.min(100,Math.round(dn/p.goal*100)):0;
         var ok=dn>=p.goal;
         var remain=p.goal-dn;
-        return '<div class="planrow'+(ok?' done':'')+'"><span class="tickbox'+(ok?' on':'')+'" data-ptick="'+x.i+'" title="تیک دستی" style="'+(ok?'background:var(--tx0);border-color:var(--tx0);color:var(--bg0)':'')+'">'+ic('check','sm')+'</span><span class="nm">'+(p.note?esc(p.note):'<span style="color:var(--tx2)">تسک بدون عنوان</span>')+'</span><span class="evmeta">'+fa(dn)+' از '+fa(p.goal)+' دقیقه</span><span class="remain'+(ok?' done':'')+'">'+(ok?'کامل شد ✓':fa(remain)+' دقیقه مانده')+'</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'background:'+colorOf(p.subj))+'"></i></div><button class="mini del" data-pdel="'+x.i+'" title="حذف تسک">'+ic('trash','sm')+'</button></div>';
+        return '<div class="planrow'+(ok?' done':'')+'"><span class="tickbox'+(ok?' on':'')+'" data-ptick="'+x.i+'" title="تیک دستی" style="'+(ok?'background:var(--tx0);border-color:var(--tx0);color:var(--bg0)':'')+'">'+ic('check','sm')+'</span><span class="nm">'+(p.note?esc(p.note):'<span style="color:var(--tx2)">تسک بدون عنوان</span>')+'</span><span class="evmeta">'+fa(dn)+' از '+fa(p.goal)+' دقیقه</span><span class="remain'+(ok?' done':'')+'">'+(ok?'کامل شد ✓':fa(remain)+' دقیقه مانده')+'</span><div class="bar" style="flex:1 1 100%"><i style="width:'+pct+'%;'+(ok?'background:#30a46c':'background:'+colorOf(p.subj))+'"></i></div><button class="mini" data-pstart="'+x.i+'" title="شروع تایمر این تسک" style="border-color:#30a46c;color:#30a46c">'+ic('play','sm')+'</button><button class="mini del" data-pdel="'+x.i+'" title="حذف تسک">'+ic('trash','sm')+'</button></div>';
       }).join('');
       return head+rows+'</div>';
     }).join('');
     var bs=w.querySelectorAll('[data-pdel]');for(var j=0;j<bs.length;j++){bs[j].onclick=(function(el){return function(e){e.stopPropagation();planDel(+el.dataset.pdel)}})(bs[j])}
+    var ps=w.querySelectorAll('[data-pstart]');for(var q=0;q<ps.length;q++){ps[q].onclick=(function(el){return function(e){e.stopPropagation();startFromPlan(+el.dataset.pstart)}})(ps[q])}
     var ts2=w.querySelectorAll('[data-ptick]');for(var k=0;k<ts2.length;k++){ts2[k].onclick=(function(el){return function(){var p=PLAN[+el.dataset.ptick];p.done=!p.done;savePlan();renderPlan();toast(p.done?'دستی تیک خورد — انجام‌شده حساب شد':'تیک دستی برداشته شد؛ فقط تایمر حساب می‌شود')}})(ts2[k])}
   }
   var pct=totGoal?Math.round(totDone/totGoal*100):0;
