@@ -74,6 +74,9 @@ const wdTomorrow = String(new Date(Date.now()+864e5).getDay());
 
   // --- free stopwatch: 10 minutes of math, no cap ---
   qs('#tabFree').onclick();
+  assert.strictEqual(qs('#customRow').style.display, 'none', 'free mode hides the custom time input');
+  assert.strictEqual(qs('#plenLbl').style.display, 'none', 'free mode hides the length label');
+  assert.strictEqual(qs('#presets').style.display, 'none', 'free mode hides the presets');
   qs('#btnStart').onclick();
   app.advance(10*60*1000); app.pump();
   assert.strictEqual(qs('#clock').textContent, '10:00', 'stopwatch counts up to 10:00, got '+qs('#clock').textContent);
@@ -86,6 +89,7 @@ const wdTomorrow = String(new Date(Date.now()+864e5).getDay());
   const starts = qs('#planList').querySelectorAll('[data-pstart]');
   assert.strictEqual(starts.length, 2, 'every task row has a start button');
   starts[1].click();
+  assert.strictEqual(qs('#customRow').style.display, '', 'focus mode restores the time input');
   assert.strictEqual(qs('#faceSubj').textContent, 'فیزیک', 'timer subject switched to the task subject');
   assert.strictEqual(qs('#clock').textContent, '45:00', 'timer length set from task goal, got '+qs('#clock').textContent);
   app.advance(45*60*1000); app.pump();     // planned time ends -> overtime

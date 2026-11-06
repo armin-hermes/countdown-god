@@ -49,8 +49,8 @@ main{max-width:780px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-dire
 .card h2 .ic{color:var(--ac2)}
 .sub{font-size:12.8px;color:var(--tx2);margin-top:3px;line-height:1.9}
 /* mode tabs */
-.modetabs{display:flex;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;padding:4px;gap:4px;margin-top:14px}
-.modetabs button{flex:1;border:none;background:transparent;color:var(--tx2);font-weight:800;font-size:13.5px;border-radius:9px;padding:10px;cursor:pointer;min-height:46px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
+.modetabs{display:flex;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;padding:4px;gap:4px;margin-top:14px}
+.modetabs button{flex:1;min-width:0;border:none;background:transparent;color:var(--tx2);font-weight:800;font-size:13.5px;border-radius:9px;padding:10px 6px;cursor:pointer;min-height:46px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;text-align:center}
 .modetabs button.on{background:var(--tx0);color:var(--bg0);box-shadow:none}
 .modetabs button.on.brk{background:var(--tx0);color:var(--bg0);box-shadow:none}
 .dial{position:relative;width:min(264px,70vw);height:min(264px,70vw);margin:14px auto 4px}
@@ -310,7 +310,8 @@ main{padding:14px 10px 48px;gap:12px}
 .lrow{flex-wrap:wrap;row-gap:6px}
 .pbar{flex-wrap:wrap}
 .pbar .evmeta{white-space:normal}
-.modetabs button{font-size:12.5px;min-height:44px}
+.modetabs button{font-size:12px;min-height:42px;padding:8px 3px}
+.modetabs #tabFree{flex:1 1 100%}
 .chips{padding:10px 2px 4px}
 .chart{gap:5px}
 .chart small{font-size:9.5px}
@@ -423,7 +424,7 @@ main{padding:14px 10px 48px;gap:12px}
 <div class="sessline" id="sessLine"></div>
 <p class="lbl" id="plenLbl">بازه تمرکز (دقیقه)</p>
 <div class="presets" id="presets"></div>
-<div class="row" style="margin-top:10px"><input class="inp" id="custom" type="number" min="1" max="960" inputmode="numeric" placeholder="زمان سفارشی — مثلا 40" dir="ltr" style="flex:1"></div>
+<div class="row" id="customRow" style="margin-top:10px"><input class="inp" id="custom" type="number" min="1" max="960" inputmode="numeric" placeholder="زمان سفارشی — مثلا 40" dir="ltr" style="flex:1"></div>
 <div class="ctl">
 <button class="btn pri" id="btnStart"></button>
 <button class="btn" id="btnPause" style="flex:1"></button>
@@ -761,6 +762,10 @@ function renderTimer(){
   $('#tabBreak').classList.toggle('on',isBreak());
   var tf=$('#tabFree');if(tf){tf.textContent='کرنومتر آزاد';tf.classList.toggle('on',isFree())}
   $('#plenLbl').textContent=T.overtime?'اضافه‌کار — داری بیشتر از برنامه می‌خونی':isFree()?'کرنومتر آزاد — بدون سقف زمانی':isBreak()?'بازه استراحت (دقیقه)':'بازه تمرکز (دقیقه)';
+  var _noLen=isFree();
+  $('#plenLbl').style.display=_noLen?'none':'';
+  $('#presets').style.display=_noLen?'none':'';
+  var _cr=$('#customRow');if(_cr)_cr.style.display=_noLen?'none':'';
   renderPresets();
   var bS=$('#btnStart'),bP=$('#btnPause'),bR=$('#btnReset');
   if(T.overtime){
