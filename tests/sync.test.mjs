@@ -140,4 +140,14 @@ const wdTomorrow = String(new Date(Date.now()+864e5).getDay());
   assert.strictEqual(slog.length, 0, 'nothing logged by the re-tap');
   console.log('Scenario 4 OK: tab switches flush minutes to the log + plan; active-tab re-tap preserves paused stopwatch');
 }
+// ---------- Scenario 5: custom sound dropdown (no native select) ----------
+{
+  const app = loadApp({ 'god.study.v1': '[]' });
+  const { qs } = app;
+  assert.strictEqual(qs('#soundCselVal').textContent, 'زنگ مدرسه و آزمون (پرانرژی و رسمی)', 'dropdown shows the default sound label');
+  const list = qs('#soundCselList').innerHTML;
+  assert.ok(list.includes('data-v="school_bell"') && list.includes('data-v="piano"') && list.includes('data-v="positive"'), 'dropdown renders all sound options');
+  assert.ok(list.includes('csel-item on'), 'current sound is marked selected in the dropdown');
+  console.log('Scenario 5 OK: custom sound dropdown renders options + current selection');
+}
 console.log('ALL TESTS PASSED');

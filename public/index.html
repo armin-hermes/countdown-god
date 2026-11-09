@@ -344,6 +344,29 @@ main{padding:14px 10px 48px;gap:12px}
 .statbox .v{font-size:18px}
 }
 @media(min-width:700px){main{padding:26px 20px 64px}.toast{right:auto;left:20px;min-width:300px}.statgrid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1024px){
+main{max-width:1220px;padding:32px 28px 76px;gap:20px}
+.tabpage.on{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+#tab-plan.on,#tab-more.on{grid-template-columns:minmax(0,920px);justify-content:center}
+#tab-stats section[aria-label="کارنامه جامع تحلیلی"]{grid-column:1/-1}
+.dial{width:300px;height:300px}
+.timer-card{padding:28px 26px 20px}
+.card{padding:24px 22px}
+}
+.csel{position:relative}
+.csel-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg0);border:1px solid var(--bd);color:var(--tx0);border-radius:11px;padding:11px 14px;min-height:48px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;text-align:right;transition:border-color .2s}
+.csel-btn:hover{border-color:var(--ac2)}
+.csel-btn:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.csel-chev{width:18px;height:18px;flex:0 0 auto;color:var(--tx2);transition:transform .25s}
+.csel.open .csel-chev{transform:rotate(180deg)}
+.csel-list{position:absolute;top:calc(100% + 6px);right:0;left:0;background:var(--bg1);border:1px solid var(--bd);border-radius:13px;box-shadow:var(--shadow);padding:6px;z-index:60;max-height:264px;overflow:auto}
+.csel-list[hidden]{display:none}
+.csel-item{display:flex;align-items:center;gap:9px;width:100%;background:transparent;border:none;color:var(--tx1);font:inherit;font-size:13.5px;font-weight:600;padding:11px 12px;border-radius:9px;cursor:pointer;text-align:right;transition:background .15s,color .15s}
+.csel-item:hover{background:var(--acsoft);color:var(--tx0)}
+.csel-item.on{color:var(--tx0);background:var(--acsoft)}
+.csel-item .ck{width:16px;height:16px;flex:0 0 auto;color:var(--ac);opacity:0}
+.csel-item.on .ck{opacity:1}
+.csel-item .tx{flex:1}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 /* Premium Report Card & Stats Sections */
@@ -560,19 +583,10 @@ main{padding:14px 10px 48px;gap:12px}
 
 <p class="lbl">صدای زنگ هشدار پایان زمان</p>
 <div class="row">
-<select class="inp" id="soundTypeSel" style="flex:1">
-<option value="school_bell">زنگ مدرسه و آزمون (پرانرژی و رسمی)</option>
-<option value="tibetan_bowl">کاسه تبتی ذن (آرامش‌بخش و تمرکز عمیق)</option>
-<option value="copper_bell">ناقوس مسین معبد (طنین بم و رزونانس بالا)</option>
-<option value="piano">آکورد پیانو گرند (طبیعی و ملایم)</option>
-<option value="marimba">ماریمبا و چایم آکوستیک (انگیزشی و ریتمیک)</option>
-<option value="digital_alarm">ساعت دیجیتال مچی (کاسیو کلاسیک)</option>
-<option value="analog_alarm">ساعت شماطه‌دار مکانیکی (زنگوله‌ای قوی)</option>
-<option value="electronic_chime">چایم الکترونیک مدرن (مینیمال و شیک)</option>
-<option value="music_box">جعبه موسیقی رویایی (نوستالژیک و دلنشین)</option>
-<option value="reception_bell">زنگ رومیزی پذیرش (دینگ کوتاه و شفاف)</option>
-<option value="positive">نوای پیروزی و موفقیت (انرژی‌بخش پایان پارت)</option>
-</select>
+<div class="csel" id="soundCsel" style="flex:1">
+<button type="button" class="csel-btn" id="soundCselBtn" aria-haspopup="listbox" aria-expanded="false"><span id="soundCselVal"></span><svg class="csel-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="csel-list" id="soundCselList" role="listbox" hidden></div>
+</div>
 <button class="btn sm pri" id="btnTestSound" style="min-height:48px"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> تست زنگ صدا</button>
 </div>
 
@@ -1505,14 +1519,50 @@ function copyReportText(){
 $('#repDlBtn').onclick=downloadReportPNG;
 $('#repCopyBtn').onclick=copyReportText;
 
-// Sound & student name settings in tab-more
-var sndSel=$('#soundTypeSel');
-if(sndSel){
+// Sound & student name settings in tab-more — custom dropdown, no native select
+var SOUND_OPTS=[
+  ['school_bell','زنگ مدرسه و آزمون (پرانرژی و رسمی)'],
+  ['tibetan_bowl','کاسه تبتی ذن (آرامش‌بخش و تمرکز عمیق)'],
+  ['copper_bell','ناقوس مسین معبد (طنین بم و رزونانس بالا)'],
+  ['piano','آکورد پیانو گرند (طبیعی و ملایم)'],
+  ['marimba','ماریمبا و چایم آکوستیک (انگیزشی و ریتمیک)'],
+  ['digital_alarm','ساعت دیجیتال مچی (کاسیو کلاسیک)'],
+  ['analog_alarm','ساعت شماطه‌دار مکانیکی (زنگوله‌ای قوی)'],
+  ['electronic_chime','چایم الکترونیک مدرن (مینیمال و شیک)'],
+  ['music_box','جعبه موسیقی رویایی (نوستالژیک و دلنشین)'],
+  ['reception_bell','زنگ رومیزی پذیرش (دینگ کوتاه و شفاف)'],
+  ['positive','نوای پیروزی و موفقیت (انرژی‌بخش پایان پارت)']
+];
+var csel=$('#soundCsel'),cselBtn=$('#soundCselBtn'),cselVal=$('#soundCselVal'),cselList=$('#soundCselList');
+if(csel&&cselBtn&&cselVal&&cselList){
   var curSt=UI.soundType||'school_bell';
   if(curSt==='zen')curSt='tibetan_bowl';
   if(curSt==='digital')curSt='digital_alarm';
-  sndSel.value=curSt;
-  sndSel.onchange=function(){UI.soundType=this.value;saveUI();playChime('focus');toast('نوع زنگ تغییر کرد')}
+  UI.soundType=curSt;
+  function cselLabel(){for(var i=0;i<SOUND_OPTS.length;i++)if(SOUND_OPTS[i][0]===UI.soundType)return SOUND_OPTS[i][1];return SOUND_OPTS[0][1]}
+  function cselOpen(o){
+    cselList.hidden=!o;
+    csel.classList.toggle('open',!!o);
+    if(cselBtn.setAttribute)cselBtn.setAttribute('aria-expanded',o?'true':'false');
+  }
+  function cselRender(){
+    cselVal.textContent=cselLabel();
+    cselList.innerHTML=SOUND_OPTS.map(function(o){
+      return '<button type="button" class="csel-item'+(o[0]===UI.soundType?' on':'')+'" role="option" data-v="'+o[0]+'" aria-selected="'+(o[0]===UI.soundType)+'"><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span class="tx">'+o[1]+'</span></button>';
+    }).join('');
+    var items=cselList.querySelectorAll('.csel-item');
+    for(var i=0;i<items.length;i++){
+      items[i].onclick=(function(b){return function(){cselPick(b.dataset.v)}})(items[i]);
+    }
+  }
+  function cselPick(v){
+    if(!v)return;
+    UI.soundType=v;saveUI();cselRender();cselOpen(false);playChime('focus');toast('نوع زنگ تغییر کرد');
+  }
+  cselBtn.onclick=function(e){if(e&&e.stopPropagation)e.stopPropagation();cselOpen(cselList.hidden)};
+  document.addEventListener('click',function(e){if(!cselList.hidden&&csel.contains&&!csel.contains(e.target))cselOpen(false)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!cselList.hidden)cselOpen(false)});
+  cselRender();
 }
 var bTestSnd=$('#btnTestSound');
 if(bTestSnd){
