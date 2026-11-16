@@ -1,0 +1,92 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run web tests
+        run: npm test
+
+      - name: Sync Capacitor Android project
+        run: npx cap sync android
+
+      - name: Generate Android icons, splash screens and notification sound
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 scripts/generate-android-assets.py
+          mkdir -p android/app/src/main/res/raw
+          cp public/sounds/school_bell.mp3 android/app/src/main/res/raw/timer_done.mp3
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install required SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;35.0.0" "build-tools;36.0.0"
+
+      - name: Setup Gradle 8.14.3
+        uses: gradle/actions/setup-gradle@v6.4.1
+        with:
+          gradle-version: 8.14.3
+
+      - name: Build debug APK
+        run: cd android && gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: countdown-god-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: countdown-god-debug-apk
+          path: apk
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apk/app-debug.apk
+          generate_release_notes: true
+          body: |
+            نسخه اندروید «ساعت مطالعه کنکور» 📱
+
+            - تایمر با بستن اپ قطع نمی‌شود؛ با باز کردن ادامه می‌دهد
+            - اعلان پایان تمرکز و استراحت، حتی وقتی اپ بسته است
+            - یادآور روزانه، نوار وضعیت هماهنگ با تم، دکمه برگشت اندروید
+
+            برای نصب، فایل `app-debug.apk` را دانلود و نصب کنید.
