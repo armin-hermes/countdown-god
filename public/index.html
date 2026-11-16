@@ -594,6 +594,14 @@ main{max-width:1220px;padding:32px 28px 76px;gap:20px}
 <div class="row"><input class="inp" id="remTime" type="time" value="21:00" dir="ltr" style="flex:1;max-width:170px"><button class="btn sm" id="remBtn">فعال‌سازی یادآور</button></div>
 <p class="evmeta" id="remState" style="margin-top:6px"></p>
 
+<p class="lbl">بیدار نگه داشتن صفحه</p>
+<div class="row" id="keepAwakeRow"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="keepAwakeChk"> حین تمرکز، صفحه خاموش نشود (فقط نسخه اندروید)</label></div>
+
+<p class="lbl">بک‌آپ داده‌ها</p>
+<div class="row"><button class="btn sm" id="backupExportBtn" style="flex:1">خروجی بک‌آپ</button><button class="btn sm" id="backupImportBtn" style="flex:1">بازیابی از فایل</button></div>
+<input type="file" id="backupFile" accept=".json,application/json" hidden>
+<p class="evmeta" id="backupState" style="margin-top:6px">بک‌آپ شامل برنامه هفتگی، آمار مطالعه، کارها و یادداشت‌هاست.</p>
+
 <p class="lbl">نصب و ویجت</p>
 <div class="row"><button class="btn sm" id="installBtn" style="flex:1">نصب اپ روی گوشی (PWA)</button><a class="btn sm ghost" id="widgetBtn" href="?widget=1">نمای ویجت</a></div>
 </section>
@@ -619,7 +627,7 @@ var PALETTE=['#e5484d','#f76b15','#f5a524','#30a46c','#12a594','#3e9bff','#8e4ec
 var OLDG=['#f7f8f8','#d0d6e0','#8a8f98','#62666d'];
 var DEF_SUBJ=['ریاضی','فیزیک','شیمی','زیست‌شناسی','ادبیات فارسی','عربی','زبان انگلیسی','سایر'].map(function(n,i){return{name:n,color:PALETTE[i%PALETTE.length]}});
 
-var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,soundType:'school_bell',studentName:'',theme:'',focusLen:25,breakLen:5,tmode:'focus',accent:'',reportPeriod:7};
+var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,soundType:'school_bell',studentName:'',theme:'',focusLen:25,breakLen:5,tmode:'focus',accent:'',reportPeriod:7,keepAwake:true};
 try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s,si){var c=s.color||'#3e9bff';if(OLDG.indexOf(c)>=0)c=PALETTE[si%PALETTE.length];return{name:String(s.name).slice(0,30),color:c}})}else if(k in UI){UI[k]=u[k]}}}}catch(e){}
 if(!UI.subjects.length)UI.subjects=DEF_SUBJ.slice();
 if(!UI.subjects.some(function(s){return s.name===UI.subject}))UI.subject=UI.subjects[0].name;
@@ -748,6 +756,129 @@ function tickSnd(){
 var FOCUS_PRE=[25,50,90],BREAK_PRE=[5,10,15];
 
 var T={total:UI.tmode==='free'?0:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,remain:UI.tmode==='free'?0:(UI.tmode==='break'?UI.breakLen:UI.focusLen)*60,running:false,endAt:0,timer:null,lastSec:-1,elapsed0:0,startStamp:0,overtime:false,ot0:0,otStart:0};
+
+/* ---- Android app (Capacitor) + session persistence ----
+   On the web (timer.us.ci) every native call below is a no-op: IS_NATIVE
+   is false, so behaviour is exactly as before. In the APK this block:
+   - persists the live timer session so closing the app never loses it
+   - schedules a native notification for the end of focus / break
+   - keeps the status bar in sync with the theme + Android back button */
+var LS_SESS='god.session.v1';
+var Cap=(typeof window!=='undefined'&&window.Capacitor)?window.Capacitor:null;
+function capPlugin(n){try{return Cap&&Cap.Plugins?Cap.Plugins[n]:null}catch(e){return null}}
+var IS_NATIVE=false;try{IS_NATIVE=!!(Cap&&Cap.getPlatform&&Cap.getPlatform()!=='web')}catch(e){}
+var LN=capPlugin('LocalNotifications');
+var SB=capPlugin('StatusBar');
+var APP=capPlugin('App');
+var KA=capPlugin('KeepAwake');
+var FS=capPlugin('Filesystem');
+var SH=capPlugin('Share');
+var NT_FOCUS=1001,NT_BREAK=1002,NT_REMIND=2000;
+var _ntInit=false;
+function ntInit(){
+  if(!IS_NATIVE||!LN||_ntInit)return;
+  _ntInit=true;
+  try{
+    LN.createChannel({id:'timer',name:'تایمر مطالعه',description:'پایان تمرکز و استراحت',importance:5,sound:'timer_done',vibration:true,visibility:1}).catch(function(){});
+    LN.requestPermissions().catch(function(){});
+    if(LN.checkExactNotificationSetting)LN.checkExactNotificationSetting().then(function(r){
+      if(r&&r.exact_alarm==='denied'&&!localStorage.getItem('god.exactHint.v1')){
+        try{localStorage.setItem('god.exactHint.v1','1')}catch(e){}
+        setTimeout(function(){toast('برای اینکه نوتیف تایمر سر وقت بیاد، توی تنظیمات گوشی بخش Alarms & reminders رو برای این اپ فعال کن')},1500);
+      }
+    }).catch(function(){});
+  }catch(e){}
+}
+function ntSchedule(id,title,body,at){
+  if(!IS_NATIVE||!LN)return;
+  ntInit();
+  try{LN.schedule({notifications:[{id:id,title:title,body:body,schedule:{at:new Date(at),allowWhileIdle:true},sound:'timer_done',channelId:'timer',iconColor:'#e5484d',extra:{kind:id===NT_BREAK?'break':'focus'}}]}).catch(function(){})}catch(e){}
+}
+function ntCancel(ids){
+  if(!IS_NATIVE||!LN)return;
+  try{LN.cancel({notifications:ids.map(function(i){return{id:i}})}).catch(function(){})}catch(e){}
+}
+/* keep exactly one end-of-countdown notification scheduled, matching T */
+function ntSyncTimer(){
+  if(!IS_NATIVE||!LN)return;
+  ntCancel([NT_FOCUS,NT_BREAK]);
+  if(T.running&&!isFree()&&!T.overtime&&T.endAt>Date.now()){
+    if(isBreak())ntSchedule(NT_BREAK,'استراحت تموم شد','وقت تمرکز بعدیه — بزن بریم',T.endAt);
+    else ntSchedule(NT_FOCUS,'تمرکز تموم شد',UI.subject+' — وقتشه یه استراحت کوتاه بکنی',T.endAt);
+  }
+}
+function ntScheduleDaily(t){
+  if(!IS_NATIVE||!LN)return;
+  ntInit();
+  var parts=String(t||'21:00').split(':');
+  var h=Math.max(0,Math.min(23,parseInt(parts[0],10)||21));
+  var m=Math.max(0,Math.min(59,parseInt(parts[1],10)||0));
+  try{LN.schedule({notifications:[{id:NT_REMIND,title:'وقت مطالعه‌ست',body:'برنامه امروزت منتظرته — بزن بریم',schedule:{on:{hour:h,minute:m},allowWhileIdle:true},sound:'timer_done',channelId:'timer',iconColor:'#e5484d'}]}).catch(function(){})}catch(e){}
+}
+function syncStatusBar(){
+  if(!IS_NATIVE||!SB)return;
+  try{
+    var dark=UI.mode!=='light';
+    SB.setBackgroundColor({color:dark?'#08090a':'#eef0f4'}).catch(function(){});
+    SB.setStyle({style:dark?'LIGHT':'DARK'}).catch(function(){});
+  }catch(e){}
+}
+/* keep the screen on while a focus/free session is running (never on break) */
+function syncKeepAwake(){
+  if(!IS_NATIVE||!KA)return;
+  try{
+    if(UI.keepAwake!==false&&T.running&&!isBreak())KA.keepAwake().catch(function(){});
+    else KA.allowSleep().catch(function(){});
+  }catch(e){}
+}
+if(IS_NATIVE&&APP){
+  try{
+    APP.addListener('appStateChange',function(s){if(s&&!s.isActive)saveSession()});
+    APP.addListener('backButton',function(){
+      if(document.body.classList.contains('zen')){document.body.classList.remove('zen');renderTimer();}
+      else if(UI.tab&&UI.tab!=='timer')showTab('timer');
+      else APP.exitApp();
+    });
+  }catch(e){}
+}
+
+/* persist the live session (timestamps, not ticks) so the timer survives
+   the app being closed or killed; restoreSession() rebuilds it on boot */
+function saveSession(){
+  try{localStorage.setItem(LS_SESS,JSON.stringify({mode:UI.tmode,subj:UI.subject,total:T.total,remain:T.remain,running:T.running,endAt:T.endAt,startStamp:T.startStamp,elapsed0:T.elapsed0,overtime:T.overtime,ot0:T.ot0,otStart:T.otStart,savedAt:Date.now()}))}catch(e){}
+}
+function clearSession(){try{localStorage.removeItem(LS_SESS)}catch(e){}}
+function restoreSession(){
+  var s=null;try{s=JSON.parse(localStorage.getItem(LS_SESS)||'null')}catch(e){}
+  if(!s||!s.mode)return false;
+  var now=Date.now();
+  /* abandoned long ago: drop it silently, never log phantom minutes */
+  if(now-(s.savedAt||0)>12*3600*1000){clearSession();return false}
+  if(s.subj&&UI.subjects.some(function(x){return x.name===s.subj}))UI.subject=s.subj;
+  UI.tmode=(s.mode==='break'||s.mode==='free')?s.mode:'focus';
+  T.total=+s.total||0;T.remain=+s.remain||0;T.elapsed0=+s.elapsed0||0;T.ot0=+s.ot0||0;
+  T.overtime=!!s.overtime;T.running=!!s.running;
+  T.endAt=+s.endAt||0;T.startStamp=+s.startStamp||0;T.otStart=+s.otStart||0;
+  T.lastSec=-1;
+  saveUI();
+  if(!T.running)return true; /* paused state restored as-is */
+  if(isFree()||T.overtime){T.timer=setInterval(tickFn,250);return true}
+  if(T.endAt>now){T.remain=(T.endAt-now)/1000;T.timer=setInterval(tickFn,250);return true}
+  /* the countdown ended while the app was away */
+  if(isBreak()){
+    UI.tmode='focus';T.total=UI.focusLen*60;T.remain=T.total;T.running=false;T.endAt=0;saveUI();
+    setTimeout(function(){toast('استراحت تموم شد — آماده تمرکز بعدی')},600);
+    return true;
+  }
+  T.overtime=true;T.ot0=Math.max(0,(now-T.endAt)/1000);T.otStart=now;T.remain=0;
+  T.timer=setInterval(tickFn,250);
+  setTimeout(function(){toast('زمان تمرکز تموم شد — اضافه‌کار از همون لحظه حساب شد')},600);
+  return true;
+}
+if(typeof document!=='undefined'&&document.addEventListener){
+  document.addEventListener('visibilitychange',function(){if(document.hidden)saveSession()});
+  window.addEventListener('pagehide',function(){saveSession()});
+}
 var TITLE='ساعت مطالعه کنکور';
 function isBreak(){return UI.tmode==='break'}
 function isFree(){return UI.tmode==='free'}
@@ -758,6 +889,7 @@ function curOtSec(){return T.overtime?(T.ot0+(T.running?(Date.now()-T.otStart)/1
 function ring(){var C=628.3;if(isFree()||T.overtime){$('#ring').style.strokeDashoffset='0';return}var p=T.total?T.remain/T.total:0;$('#ring').style.strokeDashoffset=String(C*(1-p))}
 
 function renderTimer(){
+  saveSession();ntSyncTimer();syncKeepAwake();
   var c=$('#clock');
   if(T.overtime)c.textContent='+'+fmt(curOtSec());
   else if(isFree())c.textContent=fmt(curElapsedSec());
@@ -1701,12 +1833,99 @@ function applyTheme(){
 var REM=null;try{REM=JSON.parse(localStorage.getItem('god.remind.v1')||'{}')}catch(e){REM={}}
 function renderRem(){var s=$('#remState');if(s)s.textContent=(REM&&REM.on)?('یادآور فعال — هر روز ساعت '+fa(REM.time||'21:00')):'یادآور خاموش است';var b=$('#remBtn');if(b)b.textContent=(REM&&REM.on)?'خاموش کردن':'فعال‌سازی یادآور'}
 $('#remBtn').onclick=function(){
-  if(REM&&REM.on){REM.on=false;try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}renderRem();toast('یادآور خاموش شد');return}
+  if(REM&&REM.on){REM.on=false;try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}ntCancel([NT_REMIND]);renderRem();toast('یادآور خاموش شد');return}
   var t=(($('#remTime')||{}).value)||'21:00';
+  var go=function(){REM={on:true,time:t,notified:''};try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}ntScheduleDaily(t);renderRem();toast('یادآور هر روز ساعت '+fa(t))};
+  if(IS_NATIVE){
+    ntInit();
+    if(LN)LN.requestPermissions().then(function(p){if(p&&p.display==='granted')go();else toast('اجازه اعلان داده نشد')}).catch(go);
+    else go();
+    return;
+  }
   if(!('Notification' in window)){toast('مرورگر اعلان را پشتیبانی نمی‌کند');return}
-  var go=function(){REM={on:true,time:t,notified:''};try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}renderRem();toast('یادآور هر روز ساعت '+fa(t))};
   if(Notification.permission==='granted')go();
   else Notification.requestPermission().then(function(p){if(p==='granted')go();else toast('اجازه اعلان داده نشد')});
+};
+
+/* web daily reminder: fire once a day at REM.time while the page is open
+   (in the APK the native scheduled notification handles this instead) */
+setInterval(function(){
+  if(!REM||!REM.on||IS_NATIVE)return;
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  var now=new Date();
+  var hh=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  if(hh===(REM.time||'21:00')){
+    var dk=dayKey(now.getTime());
+    if(REM.notified!==dk){
+      REM.notified=dk;try{localStorage.setItem('god.remind.v1',JSON.stringify(REM))}catch(e){}
+      try{new Notification('وقت مطالعه‌ست',{body:'برنامه امروزت منتظرته — بزن بریم'})}catch(e){}
+    }
+  }
+},30000);
+
+/* keep screen awake during focus (Android only; hidden on the web) */
+var _kaChk=$('#keepAwakeChk');
+if(_kaChk){
+  _kaChk.checked=UI.keepAwake!==false;
+  _kaChk.onchange=function(){UI.keepAwake=_kaChk.checked;saveUI();syncKeepAwake();toast(_kaChk.checked?'حین تمرکز صفحه روشن می‌ماند':'بیدار نگه داشتن صفحه خاموش شد')};
+}
+if(!IS_NATIVE){var _kaRow=$('#keepAwakeRow');if(_kaRow)_kaRow.style.display='none'}
+
+/* backup: export / import all local data as one JSON file */
+var BACKUP_KEYS=['god.ui.v1','god.study.v1','god.plan.v1','god.todo.v1','god.notes.v1','god.events.v1','god.remind.v1','god.session.v1'];
+function buildBackupJson(){
+  var data={};
+  BACKUP_KEYS.forEach(function(k){try{var v=localStorage.getItem(k);if(v!=null)data[k]=JSON.parse(v)}catch(e){try{data[k]=localStorage.getItem(k)}catch(e2){}}});
+  return JSON.stringify({app:'countdown-god',version:1,exportedAt:new Date().toISOString(),data:data},null,2);
+}
+function backupFileName(){
+  var d=new Date();
+  function p(n){return String(n).padStart(2,'0')}
+  return 'countdown-god-backup-'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.json';
+}
+function importBackupText(text){
+  var b;try{b=JSON.parse(text)}catch(e){return 'فایل بک‌آپ معتبر نیست'}
+  if(!b||b.app!=='countdown-god'||!b.data||typeof b.data!=='object')return 'این فایل بک‌آپ ساعت مطالعه نیست';
+  var n=0;
+  BACKUP_KEYS.forEach(function(k){
+    if(k in b.data){
+      try{localStorage.setItem(k,typeof b.data[k]==='string'?b.data[k]:JSON.stringify(b.data[k]));n++}catch(e){}
+    }
+  });
+  if(!n)return 'فایل بک‌آپ هیچ داده‌ای ندارد';
+  return null;
+}
+$('#backupExportBtn').onclick=function(){
+  var json=buildBackupJson();
+  if(IS_NATIVE&&FS&&SH){
+    FS.writeFile({path:backupFileName(),data:json,directory:'CACHE',encoding:'utf8'}).then(function(r){
+      return SH.share({title:'بک‌آپ ساعت مطالعه کنکور',url:r.uri,dialogTitle:'اشتراک بک‌آپ'});
+    }).then(function(){toast('بک‌آپ آماده اشتراک شد')}).catch(function(){toast('خروجی بک‌آپ ناموفق بود')});
+    return;
+  }
+  try{
+    if(typeof Blob==='undefined'||!window.URL||!URL.createObjectURL){toast('مرورگر خروجی فایل را پشتیبانی نمی‌کند');return}
+    var blob=new Blob([json],{type:'application/json'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=backupFileName();
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+    toast('فایل بک‌آپ دانلود شد');
+  }catch(e){toast('خروجی بک‌آپ ناموفق بود')}
+};
+$('#backupImportBtn').onclick=function(){var f=$('#backupFile');if(f)f.click()};
+$('#backupFile').onchange=function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  var done=function(text){
+    if(!window.confirm('بک‌آپ جایگزین همهٔ داده‌های فعلی (برنامه، آمار، کارها و یادداشت‌ها) می‌شود؛ ادامه می‌دهی؟'))return;
+    var err=importBackupText(text);
+    if(err){toast(err);return}
+    toast('بک‌آپ بازیابی شد');
+    setTimeout(function(){location.reload()},600);
+  };
+  if(f.text)f.text().then(done).catch(function(){toast('خواندن فایل ناموفق بود')});
+  else{var rd=new FileReader();rd.onload=function(){done(rd.result)};rd.onerror=function(){toast('خواندن فایل ناموفق بود')};rd.readAsText(f)}
+  this.value='';
 };
 
 /* PWA install & widget */
@@ -1919,12 +2138,14 @@ function renderMode(){
 }
 $('#modeBtn').onclick=function(){
   UI.mode=UI.mode==='dark'?'light':'dark';
-  saveUI();renderMode();renderReportCard();
+  saveUI();renderMode();renderReportCard();syncStatusBar();
 };
 
 /* boot */
+restoreSession();
 if(UI.tab&&TABS.indexOf(UI.tab)>=0)showTab(UI.tab);
 renderMode();renderKonkour();renderChips();renderSubjList();renderTimer();renderStats();applyTheme();renderRem();renderPlan();
+syncStatusBar();
 setInterval(function(){if(!T.running)renderKonkour()},60000);
 
 })();
