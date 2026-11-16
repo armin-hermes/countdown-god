@@ -29,7 +29,7 @@ class El {
   setAttribute(){} getAttribute(){ return null; } removeAttribute(){}
 }
 
-export function loadApp(seed){
+export function loadApp(seed, opts){
   fakeNow = realNow();
   const store = new Map(Object.entries(seed||{}));
   const localStorage = { getItem:k=>store.has(k)?store.get(k):null, setItem:(k,v)=>store.set(k,String(v)), removeItem:k=>store.delete(k) };
@@ -55,10 +55,35 @@ export function loadApp(seed){
   };
   sandbox.window = sandbox; sandbox.globalThis = sandbox;
   sandbox.window.confirm = ()=>true; sandbox.window.scrollTo = ()=>{}; sandbox.window.addEventListener=()=>{};
+  // opts.matchMediaLight: stub prefers-color-scheme for the first-run theme test
+  if (opts && opts.matchMediaLight !== undefined) {
+    const light = !!opts.matchMediaLight;
+    sandbox.matchMedia = (q) => ({ matches: String(q).includes('light') ? light : !light, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });
+  }
+  // opts.native: stub window.Capacitor + plugins so native-only paths can be
+  // tested; opts.appVersion sets the App.getInfo() version, opts.fetchImpl
+  // stubs fetch (e.g. the GitHub releases call in the updater).
+  let nativeCalls = null;
+  if (opts && opts.native) {
+    nativeCalls = { installApk: [] };
+    const ok = () => Promise.resolve();
+    sandbox.Capacitor = {
+      getPlatform: () => 'android',
+      Plugins: {
+        App: { getInfo: async () => ({ version: opts.appVersion || '1.2.0', name: 'TimerO', id: 'com.arminhermes.countdowngod', build: '2' }), addListener: () => {}, exitApp: () => {} },
+        AppUpdater: { installApk: async (args) => { nativeCalls.installApk.push(args); return { started: true }; } },
+        StatusBar: { setBackgroundColor: ok, setStyle: ok, setOverlaysWebView: ok },
+        LocalNotifications: { createChannel: ok, requestPermissions: async () => ({ display: 'granted' }), schedule: ok, cancel: ok },
+        KeepAwake: { keepAwake: ok, allowSleep: ok },
+        Filesystem: {}, Share: {},
+      },
+    };
+  }
+  if (opts && opts.fetchImpl) sandbox.fetch = opts.fetchImpl;
   sandbox.Date.now = ()=>fakeNow;
   vm.createContext(sandbox);
   vm.runInContext(script, sandbox);
-  return { qs, store, advance:(ms)=>{ fakeNow+=ms; }, pump:()=>{ intervals.slice().forEach(fn=>{ if(fn) fn(); }); }, sandbox };
+  return { qs, store, advance:(ms)=>{ fakeNow+=ms; }, pump:()=>{ intervals.slice().forEach(fn=>{ if(fn) fn(); }); }, sandbox, nativeCalls };
 }
 export const FA='0123456789'; // UI digits are Latin per user preference
 export const fa = n => String(n).replace(/\d/g,d=>FA[d]);
