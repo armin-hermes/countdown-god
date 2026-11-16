@@ -26,6 +26,9 @@ button{font-family:inherit}input,select{font-family:inherit;font-size:16px}
 .ic{width:18px;height:18px;flex-shrink:0;vertical-align:-3px}
 .ic.sm{width:15px;height:15px}.ic.lg{width:24px;height:24px}
 .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg0) 82%,transparent);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* native app: the WebView draws edge-to-edge, so keep the sticky header
+   below the phone status bar (no-op on the web: no .native class there) */
+body.native .topbar{padding-top:calc(10px + env(safe-area-inset-top,0px))}
 .brand{display:flex;align-items:center;gap:10px}
 .logo{width:40px;height:40px;border-radius:12px;background:var(--tx0);display:flex;align-items:center;justify-content:center;color:var(--bg0)}
 .brand b{font-size:15.5px;font-weight:800;display:block;line-height:1.5;letter-spacing:-.2px}
@@ -602,8 +605,14 @@ main{max-width:1220px;padding:32px 28px 76px;gap:20px}
 <input type="file" id="backupFile" accept=".json,application/json" hidden>
 <p class="evmeta" id="backupState" style="margin-top:6px">بک‌آپ شامل برنامه هفتگی، آمار مطالعه، کارها و یادداشت‌هاست.</p>
 
+<p class="lbl" id="updateLbl">بروزرسانی</p>
+<div class="row" id="updateRow"><button class="btn sm" id="updateCheckBtn" style="flex:1">بررسی بروزرسانی</button><span class="evmeta" id="updateVer" style="align-self:center"></span></div>
+<p class="evmeta" id="updateState" style="margin-top:6px"></p>
+
+<div id="installWidgetSection">
 <p class="lbl">نصب و ویجت</p>
 <div class="row"><button class="btn sm" id="installBtn" style="flex:1">نصب اپ روی گوشی (PWA)</button><a class="btn sm ghost" id="widgetBtn" href="?widget=1">نمای ویجت</a></div>
+</div>
 </section>
 </div></main>
 <footer>ساعت مطالعه کنکور • ذخیره‌سازی محلی • Rokh</footer>
@@ -629,6 +638,8 @@ var DEF_SUBJ=['ریاضی','فیزیک','شیمی','زیست‌شناسی','اد
 
 var UI={mode:'dark',goal:240,konkour:'2027-07-02',subjects:DEF_SUBJ,subject:'ریاضی',sound:true,soundType:'school_bell',studentName:'',theme:'',focusLen:25,breakLen:5,tmode:'focus',accent:'',reportPeriod:7,keepAwake:true};
 try{var u=JSON.parse(localStorage.getItem(LS_U)||'{}');if(u&&typeof u==='object'){for(var k in u){if(k==='subjects'&&Array.isArray(u[k])&&u[k].length){UI.subjects=u[k].filter(function(s){return s&&s.name}).map(function(s,si){var c=s.color||'#3e9bff';if(OLDG.indexOf(c)>=0)c=PALETTE[si%PALETTE.length];return{name:String(s.name).slice(0,30),color:c}})}else if(k in UI){UI[k]=u[k]}}}}catch(e){}
+/* first run: follow the device light/dark setting (a saved choice always wins) */
+try{var _u0=JSON.parse(localStorage.getItem(LS_U)||'{}');if(!_u0||typeof _u0.mode!=='string'){UI.mode=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark'}}catch(e){}
 if(!UI.subjects.length)UI.subjects=DEF_SUBJ.slice();
 if(!UI.subjects.some(function(s){return s.name===UI.subject}))UI.subject=UI.subjects[0].name;
 if(UI.soundType==='zen')UI.soundType='tibetan_bowl';if(UI.soundType==='digital')UI.soundType='digital_alarm';
@@ -767,12 +778,14 @@ var LS_SESS='god.session.v1';
 var Cap=(typeof window!=='undefined'&&window.Capacitor)?window.Capacitor:null;
 function capPlugin(n){try{return Cap&&Cap.Plugins?Cap.Plugins[n]:null}catch(e){return null}}
 var IS_NATIVE=false;try{IS_NATIVE=!!(Cap&&Cap.getPlatform&&Cap.getPlatform()!=='web')}catch(e){}
+if(IS_NATIVE){try{document.body.classList.add('native')}catch(e){}}
 var LN=capPlugin('LocalNotifications');
 var SB=capPlugin('StatusBar');
 var APP=capPlugin('App');
 var KA=capPlugin('KeepAwake');
 var FS=capPlugin('Filesystem');
 var SH=capPlugin('Share');
+var UPD=capPlugin('AppUpdater');
 var NT_FOCUS=1001,NT_BREAK=1002,NT_REMIND=2000;
 var _ntInit=false;
 function ntInit(){
@@ -819,6 +832,7 @@ function syncStatusBar(){
   if(!IS_NATIVE||!SB)return;
   try{
     var dark=UI.mode!=='light';
+    if(SB.setOverlaysWebView)SB.setOverlaysWebView({overlay:false}).catch(function(){});
     SB.setBackgroundColor({color:dark?'#08090a':'#eef0f4'}).catch(function(){});
     SB.setStyle({style:dark?'LIGHT':'DARK'}).catch(function(){});
   }catch(e){}
@@ -830,6 +844,42 @@ function syncKeepAwake(){
     if(UI.keepAwake!==false&&T.running&&!isBreak())KA.keepAwake().catch(function(){});
     else KA.allowSleep().catch(function(){});
   }catch(e){}
+}
+/* ---- in-app update (Android only): check the latest GitHub release and,
+   when a newer version exists, download its APK and open the installer ---- */
+function cmpVer(a,b){
+  var pa=String(a||'').split('.'),pb=String(b||'').split('.');
+  for(var i=0;i<Math.max(pa.length,pb.length);i++){
+    var na=parseInt(pa[i],10)||0,nb=parseInt(pb[i],10)||0;
+    if(na!==nb)return na<nb?-1:1;
+  }
+  return 0;
+}
+function checkForUpdate(){
+  var st=$('#updateState');
+  if(!IS_NATIVE||!APP||!UPD){if(st)st.textContent='بروزرسانی فقط در نسخه اندروید است';return Promise.resolve();}
+  if(st)st.textContent='در حال بررسی...';
+  return APP.getInfo().then(function(info){
+    var cur=String((info&&info.version)||'').replace(/^v/,'');
+    return fetch('https://api.github.com/repos/armin-hermes/countdown-god/releases/latest').then(function(res){
+      if(!res.ok)throw new Error('http '+res.status);
+      return res.json();
+    }).then(function(rel){
+      var latest=String((rel&&rel.tag_name)||'').replace(/^v/,'');
+      if(!latest)throw new Error('no tag');
+      if(cmpVer(latest,cur)>0){
+        var apk=(rel.assets||[]).filter(function(a){return /\.apk$/i.test(a.name||'')})[0];
+        if(!apk)throw new Error('no apk');
+        if(st)st.textContent='نسخهٔ جدید '+rel.tag_name+' اومده — داره دانلود و نصب می‌شه...';
+        return UPD.installApk({url:apk.browser_download_url}).then(function(){
+          if(st)st.textContent='نصب شروع شد — اگه گوشی اجازه خواست، «نصب از این منبع» رو برای TimerO فعال کن و دوباره بزن';
+        });
+      }
+      if(st)st.textContent='به‌روز هستی ✅ (نسخهٔ '+(cur||'؟')+')';
+    });
+  }).catch(function(){
+    if(st)st.textContent='بررسی بروزرسانی ناموفق بود — اینترنتت رو چک کن و دوباره بزن';
+  });
 }
 if(IS_NATIVE&&APP){
   try{
@@ -1870,6 +1920,15 @@ if(_kaChk){
   _kaChk.onchange=function(){UI.keepAwake=_kaChk.checked;saveUI();syncKeepAwake();toast(_kaChk.checked?'حین تمرکز صفحه روشن می‌ماند':'بیدار نگه داشتن صفحه خاموش شد')};
 }
 if(!IS_NATIVE){var _kaRow=$('#keepAwakeRow');if(_kaRow)_kaRow.style.display='none'}
+
+/* update check (Android only) + hide the PWA install/widget section in the APK */
+if(!IS_NATIVE){
+  ['updateLbl','updateRow','updateState'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none'});
+}else{
+  var _iw=$('#installWidgetSection');if(_iw)_iw.style.display='none';
+  if(APP){try{APP.getInfo().then(function(info){var v=$('#updateVer');if(v&&info&&info.version)v.textContent='نسخهٔ فعلی: '+info.version}).catch(function(){})}catch(e){}}
+}
+$('#updateCheckBtn').onclick=function(){checkForUpdate()};
 
 /* backup: export / import all local data as one JSON file */
 var BACKUP_KEYS=['god.ui.v1','god.study.v1','god.plan.v1','god.todo.v1','god.notes.v1','god.events.v1','god.remind.v1','god.session.v1'];
