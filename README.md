@@ -36,6 +36,6 @@
 ### بیلد و انتشار
 
 - بیلد APK با GitHub Actions انجام می‌شود (workflow: `.github/workflows/android.yml`): روی هر PR و پوش به main فقط بیلد و تست می‌شود؛ روی تگ `v*` (مثلاً `v1.1.0`) فایل APK به GitHub Releases منتشر می‌شود. آیکون‌ها، اسپلش‌ها، صدای نوتیف و gradle-wrapper.jar در گیت نیستند و CI آن‌ها را موقع بیلد می‌سازد.
-- بیلد محلی: `npm ci && npx cap sync android`، بعد `python3 scripts/generate-android-assets.py` و `cp public/sounds/school_bell.mp3 android/app/src/main/res/raw/timer_done.mp3`، و بعد باز کردن `android/` در Android Studio (نیاز به JDK 21 و Android SDK با API 36 دارد؛ Android Studio فایل gradle-wrapper.jar را خودش می‌سازد).
+- بیلد محلی: `npm ci && npx cap sync android`، بعد `python3 scripts/generate-android-assets.py` و `cp public/sounds/school_bell.mp3 android/app/src/main/res/raw/timer_done.mp3`، و بعد باز کردن `android/` در Android Studio (نیاز به JDK 21 و Android SDK با API 36 دارد؛ Android Studio فایل gradle-wrapper.jar را خودش می‌سازد). اگه از خط فرمان با `./gradlew` بیلد می‌گیری، اول `chmod +x android/gradlew` بزن.
 - آیکون و اسپلش از `public/icons/icon-512.png` ساخته می‌شوند؛ بعد از عوض کردن آیکون، `python3 scripts/generate-android-assets.py` را اجرا کن.
 - شمارهٔ نسخه: `package.json` و `android/app/build.gradle` (`versionName`) را با هم بالا ببر.
